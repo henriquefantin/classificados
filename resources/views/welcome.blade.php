@@ -39,31 +39,27 @@
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    <a class="nav-link" href="#">Features</a>
-                    <a class="nav-link" href="#">Pricing</a>
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    <a class="nav-link active" href="#">Home</a>
+                    <a class="nav-link active" href="#">Features</a>
+                    <a class="nav-link active" href="#">Pricing</a>
                 </div>
             </div>
-            <div class="">
-
-                @if (Route::has('login'))
-                <div class="">
-                    @auth
-                    <a href="{{ url('/dashboard') }}" class="">Dashboard</a>
-                    @else
-                    <a href="{{ route('login') }}" class="">Log in</a>
-
-                    @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="">Register</a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    @if (Route::has('login'))
+                        @auth
+                        <a href="{{ url('/dashboard') }}" class="nav-link active">Dashboard</a>
+                        @else
+                        <a href="{{ route('login') }}" class="nav-link active">Log in</a>
+        
+                        @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="nav-link active">Register</a>
+                        @endif
+                        @endauth
                     @endif
-                    @endauth
                 </div>
-                @endif
-
-
             </div>
         </div>
     </nav>
