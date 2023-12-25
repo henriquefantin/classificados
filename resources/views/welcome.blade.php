@@ -9,6 +9,10 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="{{ URL::asset('css/estilo.css') }}" />
+    <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}" />
 </head>
 
 <body class="">
@@ -41,7 +45,7 @@
             </button>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" href="#">Home</a>
+                    <a class="nav-link active" href="/">Home</a>
                     <a class="nav-link active" href="#">Features</a>
                     <a class="nav-link active" href="#">Pricing</a>
                 </div>
@@ -49,15 +53,15 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     @if (Route::has('login'))
-                        @auth
-                        <a href="{{ url('/dashboard') }}" class="nav-link active">Dashboard</a>
-                        @else
-                        <a href="{{ route('login') }}" class="nav-link active">Log in</a>
-        
-                        @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="nav-link active">Register</a>
-                        @endif
-                        @endauth
+                    @auth
+                    <a href="{{ url('/dashboard') }}" class="nav-link active">Dashboard</a>
+                    @else
+                    <a href="{{ route('login') }}" class="nav-link active">Log in</a>
+
+                    @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="nav-link active">Register</a>
+                    @endif
+                    @endauth
                     @endif
                 </div>
             </div>
