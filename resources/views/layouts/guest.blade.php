@@ -27,7 +27,7 @@
             </a>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" href="/">Home</a>
+                    <a class="nav-link active" href="/">Classificados</a>
                 </div>
             </div>
             <div class="navbar-nav justify-content-end">
@@ -35,10 +35,10 @@
                 @auth
                 <a href="{{ url('/dashboard') }}" class="nav-link active">Dashboard</a>
                 @else
-                <a href="{{ route('login') }}" class="nav-link active">Log in</a>
+                <a href="{{ route('login') }}" class="nav-link active">Anunciar</a>
 
                 @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="nav-link active">Register</a>
+                <a href="{{ route('register') }}" class="nav-link active">Registrar</a>
                 @endif
                 @endauth
                 @endif

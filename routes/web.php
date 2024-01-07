@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +18,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+
+Route::group(['middleware' => 'auth'], function() {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::get('/cadastro/anuncio', [Dashboard::class, 'novoAnuncio'])->name('novoAnuncio');
+    Route::get('/cadastro/tipo', [Dashboard::class, 'tipoAnuncio'])->name('tipoAnuncio');
+    Route::get('/cadastro/pagamento', [Dashboard::class, 'formaPagamento'])->name('formaPagamento');
+});
+
+
 
 require __DIR__.'/auth.php';

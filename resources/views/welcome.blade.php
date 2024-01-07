@@ -10,9 +10,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{{ asset('css/estilo.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
 
-    <link rel="stylesheet" href="{{ URL::asset('css/estilo.css') }}" />
-    <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}" />
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}"></script>
 </head>
 
 <body class="">
@@ -45,9 +48,7 @@
             </button>
             <div class="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" href="/">Home</a>
-                    <a class="nav-link active" href="#">Features</a>
-                    <a class="nav-link active" href="#">Pricing</a>
+                    <a class="nav-link active" href="/">Classificados</a>
                 </div>
             </div>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
@@ -56,10 +57,10 @@
                     @auth
                     <a href="{{ url('/dashboard') }}" class="nav-link active">Dashboard</a>
                     @else
-                    <a href="{{ route('login') }}" class="nav-link active">Log in</a>
+                    <a href="{{ route('login') }}" class="nav-link active">Entrar</a>
 
                     @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="nav-link active">Register</a>
+                    <a href="{{ route('register') }}" class="nav-link active">Anunciar</a>
                     @endif
                     @endauth
                     @endif
