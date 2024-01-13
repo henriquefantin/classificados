@@ -1,3 +1,8 @@
 .oculto {
     display: none;
 }
+
+.max-auto {
+  margin-left: auto;
+  margin-right: auto;
+}

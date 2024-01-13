@@ -27,6 +27,8 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/cadastro/anuncio', [Dashboard::class, 'novoAnuncio'])->name('novoAnuncio');
     Route::get('/cadastro/tipo', [Dashboard::class, 'tipoAnuncio'])->name('tipoAnuncio');
     Route::get('/cadastro/pagamento', [Dashboard::class, 'formaPagamento'])->name('formaPagamento');
+
+    Route::post('/salvar/tipo', [Dashboard::class, 'salvarTipoAnuncio'])->name('salvarTipoAnuncio');
 });
 
 
