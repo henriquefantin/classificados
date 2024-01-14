@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="max-auto max-w-2xl">
-                        <form action="" method="post">
+                        <form id="form" name="form" action="{{ $actionForm }}" method="post" autocomplete="off">
                             @csrf
                             <div class="grid grid-cols-3">
                                 <div class="mb-4 col-span-3">

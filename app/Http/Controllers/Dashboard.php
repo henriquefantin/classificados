@@ -26,10 +26,22 @@ class Dashboard extends Controller
                 return "'$valor'";
         }
     }
+
     //Views
     public function novoAnuncio()
     {
-        return view('cadastros.anuncio');
+        $sql  = " SELECT id, descricao, limiteParcelas ";
+        $sql .= " FROM forma_pagamento ";
+        $sql .= " ORDER BY descricao ";
+        $rsFormaPag = DB::select($sql);
+
+        $sql  = " SELECT id, descricao ";
+        $sql .= " FROM tipo_anuncio ";
+        $sql .= " ORDER BY descricao ";
+        $rsTipoAnuncio = DB::select($sql);
+
+        $actionForm = route('salvarAnuncio');
+        return view('cadastros.anuncio', ['actionForm' => $actionForm,'formaPagamento' => $rsFormaPag, 'tipoAnuncio' => $rsTipoAnuncio]);
     }
 
     public function tipoAnuncio()
@@ -40,7 +52,8 @@ class Dashboard extends Controller
 
     public function formaPagamento()
     {
-        return view('cadastros.formaPagamento');
+        $actionForm = route('salvarFormaPagamento');
+        return view('cadastros.formaPagamento', ['actionForm' => $actionForm]);
     }
 
     //Edit Views
@@ -56,7 +69,7 @@ class Dashboard extends Controller
 
         try {
             $sql  = "INSERT INTO tipo_anuncio (descricao) VALUES (";
-            $sql .=     $this->validarCampo($descricao, 'S');
+            $sql .= $this->validarCampo($descricao, 'S');
             $sql .= ")";
             $rsTipoAnuncio = DB::statement($sql);
             if ($rsTipoAnuncio) {
@@ -64,6 +77,82 @@ class Dashboard extends Controller
                 $idAnuncio = DB::getPdo()->lastInsertId();
             } else {
                 $msg = "Erro ao inserir o tipo do anuncio.";
+                $erro = true;
+            }
+
+            if ($erro) {
+                DB::rollBack();
+                return $msg;
+            } else {
+                DB::commit();
+                return $idAnuncio . "#" . $msg;
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return "Erro no cadastro.";
+        }
+    }
+
+    function salvarFormaPagamento(Request $req)
+    {
+        DB::beginTransaction();
+
+        $msg = "";
+        $erro = false;
+        $descricao = $req->input('descricao');
+        $parcelas = $req->input('parcelas');
+
+        try {
+            $sql  = "INSERT INTO forma_pagamento (descricao,limiteParcelas) VALUES (";
+            $sql .= $this->validarCampo($descricao, 'S');
+            $sql .= ",".$this->validarCampo($parcelas, 'N');
+            $sql .= ")";
+            $rsFormaPag = DB::statement($sql);
+            if ($rsFormaPag) {
+                $msg = "Forma de pagamento inserida com sucesso.";
+                $idAnuncio = DB::getPdo()->lastInsertId();
+            } else {
+                $msg = "Erro ao inserir forma de pagamento.";
+                $erro = true;
+            }
+
+            if ($erro) {
+                DB::rollBack();
+                return $msg;
+            } else {
+                DB::commit();
+                return $idAnuncio . "#" . $msg;
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return "Erro no cadastro.";
+        }
+    }
+
+    function salvarAnuncio(Request $req)
+    {
+        DB::beginTransaction();
+
+        $msg = "";
+        $erro = false;
+        $titulo = $req->input('nome');
+        $descricao = $req->input('descricao');
+        $codFormaPagamento = $req->input('codFormaPagamento');
+        $codTipoAnuncio = $req->input('codTipoAnuncio');
+
+        try {
+            $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio) VALUES (";
+            $sql .= $this->validarCampo($titulo, 'S');
+            $sql .= ",".$this->validarCampo($descricao, 'S');
+            $sql .= ",".$this->validarCampo($codFormaPagamento, 'N');
+            $sql .= ",".$this->validarCampo($codTipoAnuncio, 'N');
+            $sql .= ")";
+            $rsFormaPag = DB::statement($sql);
+            if ($rsFormaPag) {
+                $msg = "Anuncio inserido com sucesso.";
+                $idAnuncio = DB::getPdo()->lastInsertId();
+            } else {
+                $msg = "Erro ao inserir anuncio.";
                 $erro = true;
             }
 
