@@ -135,10 +135,31 @@ class Dashboard extends Controller
 
         $msg = "";
         $erro = false;
+        $nomeImagem = "";
+        $nomeVideo = "";
+        $arrayImagens = [];
         $titulo = $req->input('nome');
         $descricao = $req->input('descricao');
         $codFormaPagamento = $req->input('codFormaPagamento');
         $codTipoAnuncio = $req->input('codTipoAnuncio');
+
+        //imagens
+        if ($req->hasFile('imagensUpload')) {
+            foreach ($req->file('imagensUpload') as $arquivo) {
+                $ext = $arquivo->extension();
+                $nomeImagem = md5($arquivo->getClientOriginalName() . strtotime("now")) . "." . $ext;
+                $arquivo->move(public_path('arquivos/imagens'), $nomeImagem);
+                $arrayImagens[] = $nomeImagem;
+            }
+        }
+
+        //video
+        if ($req->hasFile('videoUpload')) {
+            $arquivoVideo = $req->videoUpload;
+            $ext = $arquivoVideo->extension();
+            $nomeVideo = md5($arquivoVideo->getClientOriginalName() . strtotime("now")) . "." . $ext;
+            $req->videoUpload->move(public_path('arquivos/videos'), $nomeVideo);
+        }
 
         try {
             $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio) VALUES (";
@@ -154,6 +175,26 @@ class Dashboard extends Controller
             } else {
                 $msg = "Erro ao inserir anuncio.";
                 $erro = true;
+            }
+
+            if (!$erro && $nomeVideo != "") {
+                $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
+                $sql .= $this->validarCampo($idAnuncio, 'N');
+                $sql .= ",".$this->validarCampo($nomeVideo, 'S');
+                $sql .= ",'V'";
+                $sql .= ")";
+                DB::statement($sql);
+            }
+
+            if (!$erro && count($arrayImagens) > 0) {
+                for ($x = 0; count($arrayImagens) > $x; $x++) {
+                    $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
+                    $sql .= $this->validarCampo($idAnuncio, 'N');
+                    $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
+                    $sql .= ",'I'";
+                    $sql .= ")";
+                    DB::statement($sql);
+                }
             }
 
             if ($erro) {
