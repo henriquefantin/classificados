@@ -27,8 +27,49 @@ class Dashboard extends Controller
         }
     }
 
-    //Views
-    public function novoAnuncio()
+    //Views - Lista
+    function listarAnuncio() {
+        $sql  = " SELECT P.id, P.titulo, T.descricao AS tipo, F.descricao AS pagamento, ";
+        $sql .= " ( ";
+        $sql .= "   SELECT AP.arquivo ";
+        $sql .= "   FROM arquivo_produto AP ";
+        $sql .= "   WHERE AP.codProduto = P.id ";
+        $sql .= "   AND AP.tipo = 'I' ";
+        $sql .= "   ORDER BY AP.created_at ";
+        $sql .= "   LIMIT 1 ";
+        $sql .= " ) AS imagem ";
+        $sql .= " FROM produtos P ";
+        $sql .= "   JOIN tipo_anuncio T ON T.id = P.codTipoAnuncio ";
+        $sql .= "   JOIN forma_pagamento F ON F.id = P.codFormaPagamento ";
+        $sql .= " WHERE P.dataFim IS NULL ";
+        $sql .= " ORDER BY P.created_at DESC ";
+        $rsLista = DB::select($sql);
+
+        return view('listas.anuncio', ['lista' => $rsLista]);
+    }
+    
+    function listarTipoAnuncio() {
+        $sql  = " SELECT id, descricao ";
+        $sql .= " FROM tipo_anuncio ";
+        $sql .= " WHERE dataFim IS NULL ";
+        $sql .= " ORDER BY created_at DESC ";
+        $rsLista = DB::select($sql);
+
+        return view('listas.tipoAnuncio', ['lista' => $rsLista]);
+    }
+
+    function listarFormaPagamento() {
+        $sql  = " SELECT id, descricao, limiteParcelas ";
+        $sql .= " FROM forma_pagamento P ";
+        $sql .= " WHERE dataFim IS NULL ";
+        $sql .= " ORDER BY created_at DESC ";
+        $rsLista = DB::select($sql);
+
+        return view('listas.formaPagamento', ['lista' => $rsLista]);
+    }
+
+    //Views - Cadastro
+    function novoAnuncio()
     {
         $sql  = " SELECT id, descricao, limiteParcelas ";
         $sql .= " FROM forma_pagamento ";
@@ -44,13 +85,13 @@ class Dashboard extends Controller
         return view('cadastros.anuncio', ['actionForm' => $actionForm,'formaPagamento' => $rsFormaPag, 'tipoAnuncio' => $rsTipoAnuncio]);
     }
 
-    public function tipoAnuncio()
+    function novoTipoAnuncio()
     {
         $actionForm = route('salvarTipoAnuncio');
         return view('cadastros.tipoAnuncio', ['actionForm' => $actionForm]);
     }
 
-    public function formaPagamento()
+    function novoFormaPagamento()
     {
         $actionForm = route('salvarFormaPagamento');
         return view('cadastros.formaPagamento', ['actionForm' => $actionForm]);
