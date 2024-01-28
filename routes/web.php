@@ -34,6 +34,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/cadastro/tipoAnuncio', [Dashboard::class, 'novoTipoAnuncio'])->name('novoTipoAnuncio');
     Route::get('/cadastro/formaPagamento', [Dashboard::class, 'novoFormaPagamento'])->name('novoFormaPagamento');
 
+    //Views - Editar
+    Route::get('/editar/anuncio/{id}', [Dashboard::class, 'editarAnuncio'])->name('editarAnuncio');
+    Route::get('/editar/tipoAnuncio/{id}', [Dashboard::class, 'editarTipoAnuncio'])->name('editarTipoAnuncio');
+    Route::get('/editar/formaPagamento/{id}', [Dashboard::class, 'editarFormaPagamento'])->name('editarFormaPagamento');
+
     //Insert
     Route::post('/salvar/anuncio', [Dashboard::class, 'salvarAnuncio'])->name('salvarAnuncio');
     Route::post('/salvar/tipoAnuncio', [Dashboard::class, 'salvarTipoAnuncio'])->name('salvarTipoAnuncio');

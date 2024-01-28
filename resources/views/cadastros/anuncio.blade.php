@@ -1,3 +1,14 @@
+@section('scripts')
+<script>
+  @empty($produto)
+  @else
+    $("#descricao").val("{{$produto->descricao}}");
+    $("#codFormaPagamento").val("{{$produto->codFormaPagamento}}");
+    $("#codTipoAnuncio").val("{{$produto->codTipoAnuncio}}");
+  @endempty
+</script>
+@endsection
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -14,7 +25,7 @@
                             @csrf
                             <div class="mb-4">
                                 <label for="nome" class="block text-sm font-medium leading-6 text-gray-900">Nome</label>
-                                <input type="text" id="nome" name="nome" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nome do produto">
+                                <input type="text" id="nome" name="nome" value="@empty($produto)@else{{$produto->titulo}}@endempty" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nome do produto">
                             </div>
                             <div class="mb-4">
                                 <label for="descricao" class="block text-sm font-medium leading-6 text-gray-900">Descrição</label>

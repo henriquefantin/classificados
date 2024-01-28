@@ -98,6 +98,27 @@ class Dashboard extends Controller
     }
 
     //Edit Views
+    function editarAnuncio($id)
+    {
+        $sql  = " SELECT id, descricao, limiteParcelas ";
+        $sql .= " FROM forma_pagamento ";
+        $sql .= " ORDER BY descricao ";
+        $rsFormaPag = DB::select($sql);
+
+        $sql  = " SELECT id, descricao ";
+        $sql .= " FROM tipo_anuncio ";
+        $sql .= " ORDER BY descricao ";
+        $rsTipoAnuncio = DB::select($sql);
+
+        $sql  = " SELECT id, titulo, descricao, codFormaPagamento, codTipoAnuncio ";
+        $sql .= " FROM produtos ";
+        $sql .= " WHERE id = ".$id;
+        $sql .= " LIMIT 1 ";
+        $rsProduto = DB::select($sql);
+
+        $actionForm = route('salvarAnuncio');
+        return view('cadastros.anuncio', ['actionForm' => $actionForm,'formaPagamento' => $rsFormaPag, 'tipoAnuncio' => $rsTipoAnuncio, 'produto' => $rsProduto[0]]);
+    }
 
     //Insert
     function salvarTipoAnuncio(Request $req)
