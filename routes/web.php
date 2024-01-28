@@ -45,6 +45,14 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('/salvar/formaPagamento', [Dashboard::class, 'salvarFormaPagamento'])->name('salvarFormaPagamento');
 
     //Update
+    Route::post('/atualizar/anuncio/{id}', [Dashboard::class, 'atualizarAnuncio'])->name('atualizarAnuncio');
+    Route::post('/atualizar/tipoAnuncio/{id}', [Dashboard::class, 'atualizarTipoAnuncio'])->name('atualizarTipoAnuncio');
+    Route::post('/atualizar/formaPagamento/{id}', [Dashboard::class, 'atualizarFormaPagamento'])->name('atualizarFormaPagamento');
+
+    //Excluir - Encerrar
+    Route::get('/encerrar/anuncio/{id}', [Dashboard::class, 'encerrarAnuncio'])->name('encerrarAnuncio');
+    Route::get('/encerrar/tipoAnuncio/{id}', [Dashboard::class, 'encerrarTipoAnuncio'])->name('encerrarTipoAnuncio');
+    Route::get('/encerrar/formaPagamento/{id}', [Dashboard::class, 'encerrarFormaPagamento'])->name('encerrarFormaPagamento');
 });
 
 
