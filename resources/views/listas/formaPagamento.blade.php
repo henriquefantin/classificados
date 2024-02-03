@@ -1,3 +1,12 @@
+@section('scripts')
+<script>
+    $('#statusAnuncio').val("{{ $tipo }}");
+    $('#statusAnuncio').change(function() {
+        window.location = $(this).find('option:selected').attr('url');
+    });
+</script>
+@endsection
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -16,9 +25,9 @@
                         <div class="mt-6 flex items-center justify-end gap-3">
                             <label for="statusAnuncio" class="block text-sm font-medium leading-6 text-gray-900">Status</label>
                             <select id="statusAnuncio" name="statusAnuncio" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-32 sm:text-sm sm:leading-6">
-                                <option value="">Ativo</option>
-                                <option value="E">Encerrado</option>
-                                <option value="T">Todos</option>
+                                <option url="{{ route('listarFormaPagamento', ['tipo' => 'A']) }}" value="A">Ativo</option>
+                                <option url="{{ route('listarFormaPagamento', ['tipo' => 'E']) }}" value="E">Encerrado</option>
+                                <option url="{{ route('listarFormaPagamento', ['tipo' => 'T']) }}" value="T">Todos</option>
                             </select>
                         </div>
                     </div>

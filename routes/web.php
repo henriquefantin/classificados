@@ -25,9 +25,9 @@ Route::group(['middleware' => 'auth'], function() {
     })->name('dashboard');
     
     //Views - Lista
-    Route::get('/listar/anuncio', [Dashboard::class, 'listarAnuncio'])->name('listarAnuncio');
-    Route::get('/listar/tipoAnuncio', [Dashboard::class, 'listarTipoAnuncio'])->name('listarTipoAnuncio');
-    Route::get('/listar/formaPagamento', [Dashboard::class, 'listarFormaPagamento'])->name('listarFormaPagamento');
+    Route::get('/listar/anuncio/{tipo?}', [Dashboard::class, 'listarAnuncio'])->name('listarAnuncio');
+    Route::get('/listar/tipoAnuncio/{tipo?}', [Dashboard::class, 'listarTipoAnuncio'])->name('listarTipoAnuncio');
+    Route::get('/listar/formaPagamento/{tipo?}', [Dashboard::class, 'listarFormaPagamento'])->name('listarFormaPagamento');
 
     //Views - Cadastro
     Route::get('/cadastro/anuncio', [Dashboard::class, 'novoAnuncio'])->name('novoAnuncio');

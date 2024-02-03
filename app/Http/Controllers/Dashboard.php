@@ -28,7 +28,7 @@ class Dashboard extends Controller
     }
 
     //Views - Lista
-    function listarAnuncio() {
+    function listarAnuncio($tipo = "A") {
         $sql  = " SELECT P.id, P.titulo, T.descricao AS tipo, F.descricao AS pagamento, ";
         $sql .= " ( ";
         $sql .= "   SELECT AP.arquivo ";
@@ -41,31 +41,43 @@ class Dashboard extends Controller
         $sql .= " FROM produtos P ";
         $sql .= "   JOIN tipo_anuncio T ON T.id = P.codTipoAnuncio ";
         $sql .= "   JOIN forma_pagamento F ON F.id = P.codFormaPagamento ";
-        $sql .= " WHERE P.dataFim IS NULL ";
+        if ($tipo == "A") {
+            $sql .= " WHERE P.dataFim IS NULL ";
+        } else if ($tipo == "E") {
+            $sql .= " WHERE P.dataFim IS NOT NULL ";
+        }
         $sql .= " ORDER BY P.created_at DESC ";
         $rsLista = DB::select($sql);
 
-        return view('listas.anuncio', ['lista' => $rsLista]);
+        return view('listas.anuncio', ['lista' => $rsLista, 'tipo' => $tipo]);
     }
     
-    function listarTipoAnuncio() {
+    function listarTipoAnuncio($tipo = "A") {
         $sql  = " SELECT id, descricao ";
         $sql .= " FROM tipo_anuncio ";
-        $sql .= " WHERE dataFim IS NULL ";
+        if ($tipo == "A") {
+            $sql .= " WHERE dataFim IS NULL ";
+        } else if ($tipo == "E") {
+            $sql .= " WHERE dataFim IS NOT NULL ";
+        }
         $sql .= " ORDER BY created_at DESC ";
         $rsLista = DB::select($sql);
 
-        return view('listas.tipoAnuncio', ['lista' => $rsLista]);
+        return view('listas.tipoAnuncio', ['lista' => $rsLista, 'tipo' => $tipo]);
     }
 
-    function listarFormaPagamento() {
+    function listarFormaPagamento($tipo = "A") {
         $sql  = " SELECT id, descricao, limiteParcelas ";
         $sql .= " FROM forma_pagamento P ";
-        $sql .= " WHERE dataFim IS NULL ";
+        if ($tipo == "A") {
+            $sql .= " WHERE dataFim IS NULL ";
+        } else if ($tipo == "E") {
+            $sql .= " WHERE dataFim IS NOT NULL ";
+        }
         $sql .= " ORDER BY created_at DESC ";
         $rsLista = DB::select($sql);
 
-        return view('listas.formaPagamento', ['lista' => $rsLista]);
+        return view('listas.formaPagamento', ['lista' => $rsLista, 'tipo' => $tipo]);
     }
 
     //Views - Cadastro
@@ -81,8 +93,16 @@ class Dashboard extends Controller
         $sql .= " ORDER BY descricao ";
         $rsTipoAnuncio = DB::select($sql);
 
+        $arrayImagens = [];
+        $arrayVideos = [];
         $actionForm = route('salvarAnuncio');
-        return view('cadastros.anuncio', ['actionForm' => $actionForm,'formaPagamento' => $rsFormaPag, 'tipoAnuncio' => $rsTipoAnuncio]);
+        return view('cadastros.anuncio', [
+            'actionForm' => $actionForm,
+            'formaPagamento' => $rsFormaPag,
+            'tipoAnuncio' => $rsTipoAnuncio,
+            'imagens' => $arrayImagens,
+            'video' => $arrayVideos
+        ]);
     }
 
     function novoTipoAnuncio()
@@ -116,8 +136,41 @@ class Dashboard extends Controller
         $sql .= " LIMIT 1 ";
         $rsProduto = DB::select($sql);
 
+        $sql  = " SELECT arquivo ";
+        $sql .= " FROM arquivo_produto ";
+        $sql .= " WHERE codProduto = ".$id;
+        $sql .= " AND tipo = 'I' ";
+        $rsImagens = DB::select($sql);
+
+        $arrayImagens = [];
+        $contImg = 0;
+        foreach ($rsImagens as $reg) {
+            $arrayImagens[$contImg] = url('arquivos/imagens/'.$reg->arquivo);
+            $contImg++;
+        }
+
+        $sql  = " SELECT arquivo ";
+        $sql .= " FROM arquivo_produto ";
+        $sql .= " WHERE codProduto = ".$id;
+        $sql .= " AND tipo = 'V' ";
+        $rsVideo = DB::select($sql);
+
+        $arrayVideos = [];
+        $contVid = 0;
+        foreach ($rsVideo as $reg) {
+            $arrayVideos[$contVid] = url('arquivos/videos/'.$reg->arquivo);
+            $contVid++;
+        }
+
         $actionForm = route('atualizarAnuncio', ['id' => $id]);
-        return view('cadastros.anuncio', ['actionForm' => $actionForm,'formaPagamento' => $rsFormaPag, 'tipoAnuncio' => $rsTipoAnuncio, 'produto' => $rsProduto[0]]);
+        return view('cadastros.anuncio', [
+            'actionForm' => $actionForm,
+            'formaPagamento' => $rsFormaPag,
+            'tipoAnuncio' => $rsTipoAnuncio,
+            'produto' => $rsProduto[0],
+            'imagens' => $arrayImagens,
+            'video' => $arrayVideos
+        ]);
     }
 
     function editarTipoAnuncio($id)

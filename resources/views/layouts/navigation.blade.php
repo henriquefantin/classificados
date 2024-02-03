@@ -22,17 +22,17 @@
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('listarAnuncio')" :active="request()->routeIs('listarAnuncio') || request()->routeIs('novoAnuncio')">
+                    <x-nav-link :href="route('listarAnuncio', ['tipo' => 'A'])" :active="request()->routeIs('listarAnuncio') || request()->routeIs('novoAnuncio')">
                         {{ __('Anuncios') }}
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('listarTipoAnuncio')" :active="request()->routeIs('listarTipoAnuncio') || request()->routeIs('novoTipoAnuncio')">
+                    <x-nav-link :href="route('listarTipoAnuncio', ['tipo' => 'A'])" :active="request()->routeIs('listarTipoAnuncio') || request()->routeIs('novoTipoAnuncio')">
                         {{ __('Tipo Anuncio') }}
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('listarFormaPagamento')" :active="request()->routeIs('listarFormaPagamento') || request()->routeIs('novoFormaPagamento')">
+                    <x-nav-link :href="route('listarFormaPagamento', ['tipo' => 'A'])" :active="request()->routeIs('listarFormaPagamento') || request()->routeIs('novoFormaPagamento')">
                         {{ __('Forma Pagamento') }}
                     </x-nav-link>
                 </div>

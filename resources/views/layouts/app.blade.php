@@ -7,17 +7,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Classificados') }}</title>
-    
+
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-    
+
     <!-- Estilos -->
     <link rel="stylesheet" href="{{ asset('css/estilo.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 
 <body class="font-sans antialiased">
