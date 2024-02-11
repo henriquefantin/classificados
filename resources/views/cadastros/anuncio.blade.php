@@ -21,19 +21,19 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="max-auto max-w-2xl">
-                        <form id="form" name="form" action="{{ $actionForm }}" method="post" enctype="multipart/form-data">
+                        <form id="formCadastro" name="formCadastro" action="{{ $actionForm }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-4">
                                 <label for="nome" class="block text-sm font-medium leading-6 text-gray-900">Nome</label>
-                                <input type="text" id="nome" name="nome" value="@empty($produto)@else{{$produto->titulo}}@endempty" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nome do produto">
+                                <input type="text" id="nome" name="nome" value="@empty($produto)@else{{$produto->titulo}}@endempty" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nome do produto">
                             </div>
                             <div class="mb-4">
                                 <label for="descricao" class="block text-sm font-medium leading-6 text-gray-900">Descrição</label>
-                                <textarea id="descricao" name="descricao" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" rows="4" placeholder="Descrição do produto"></textarea>
+                                <textarea id="descricao" name="descricao" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" rows="4" placeholder="Descrição do produto"></textarea>
                             </div>
                             <div class="mb-4">
                                 <label for="codFormaPagamento" class="block text-sm font-medium leading-6 text-gray-900">Forma de Pagamento</label>
-                                <select id="codFormaPagamento" name="codFormaPagamento" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                <select id="codFormaPagamento" name="codFormaPagamento" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                     <option value="">-- Selecione --</option>
                                     @foreach($formaPagamento as $val)
                                     <option value="{{ $val->id }}">{{$val->descricao}} - (até {{$val->limiteParcelas}}x)</option>
@@ -42,7 +42,7 @@
                             </div>
                             <div class="mb-4">
                                 <label for="codTipoAnuncio" class="block text-sm font-medium leading-6 text-gray-900">Tipo do Anuncio</label>
-                                <select id="codTipoAnuncio" name="codTipoAnuncio" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                <select id="codTipoAnuncio" name="codTipoAnuncio" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                     <option value="">-- Selecione --</option>
                                     @foreach($tipoAnuncio as $val)
                                     <option value="{{ $val->id }}">{{$val->descricao}}</option>
@@ -59,7 +59,7 @@
                                         <div class="mt-4 flex text-sm leading-6 text-gray-600">
                                             <label for="imagensUpload" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                                                 <span>Selecione as fotos</span>
-                                                <input id="imagensUpload" name="imagensUpload[]" type="file" class="sr-only" multiple>
+                                                <input id="imagensUpload" name="imagensUpload[]" type="file" class="obrigatorio sr-only" multiple>
                                             </label>
                                             <!-- <p class="pl-1">ou arraste e solte</p> -->
                                         </div>
@@ -88,7 +88,7 @@
                             <div class="mb-4">
                                 @empty($imagens)
                                 @else
-                                <div class="flex justify-center">
+                                <div class="flex justify-start">
                                     <!-- TW Elements is free under AGPL, with commercial license required for specific uses. See more details: https://tw-elements.com/license/ and contact us for queries at tailwind@mdbootstrap.com -->
                                     <div id="carroselImagens" class="relative w-9/12" data-te-carousel-init data-te-ride="carousel">
                                         <!--Carousel indicators-->
