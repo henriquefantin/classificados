@@ -1,10 +1,39 @@
 @section('scripts')
 <script>
+    $("#btnGravar").click(function() {
+        let modal = document.getElementById('popupCarregando');
+        if (validarFormulario("formCadastro","obrigatorio")) {
+            modal.classList.remove('hidden');
+
+            let formData = new FormData(document.getElementById('formCadastro'));
+            $.ajax({
+                url: "{{ $actionForm }}",
+                type: "POST",
+                cache: false,
+                processData: false,  // Não processar os dados
+                contentType: false,  // Não configurar o tipo de conteúdo
+                data: formData,
+                error: function() {
+                    modal.classList.add('hidden');
+                },
+                success: function(data) {
+                    modal.classList.add('hidden');
+                    if (data.success) {
+                        console.log(data.msg);
+                    } else {
+                        console.log(data.msg);
+                    }
+                }
+            });
+        }
+    });
+
     @empty($produto)
     @else
     $("#descricao").val("{{$produto->descricao}}");
     $("#codFormaPagamento").val("{{$produto->codFormaPagamento}}");
     $("#codTipoAnuncio").val("{{$produto->codTipoAnuncio}}");
+    $("#imagensUpload").removeClass("obrigatorio");
     @endempty
 </script>
 @endsection
@@ -21,33 +50,37 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="max-auto max-w-2xl">
-                        <form id="formCadastro" name="formCadastro" action="{{ $actionForm }}" method="post" enctype="multipart/form-data">
+                        <form id="formCadastro" name="formCadastro" action="#" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="mb-4">
                                 <label for="nome" class="block text-sm font-medium leading-6 text-gray-900">Nome</label>
-                                <input type="text" id="nome" name="nome" value="@empty($produto)@else{{$produto->titulo}}@endempty" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nome do produto">
+                                <input type="text" id="nome" name="nome" value="@empty($produto)@else{{$produto->titulo}}@endempty" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" placeholder="Nome do produto">
+                                <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                             </div>
                             <div class="mb-4">
                                 <label for="descricao" class="block text-sm font-medium leading-6 text-gray-900">Descrição</label>
-                                <textarea id="descricao" name="descricao" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" rows="4" placeholder="Descrição do produto"></textarea>
+                                <textarea id="descricao" name="descricao" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" rows="4" placeholder="Descrição do produto"></textarea>
+                                <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                             </div>
                             <div class="mb-4">
                                 <label for="codFormaPagamento" class="block text-sm font-medium leading-6 text-gray-900">Forma de Pagamento</label>
-                                <select id="codFormaPagamento" name="codFormaPagamento" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                <select id="codFormaPagamento" name="codFormaPagamento" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                     <option value="">-- Selecione --</option>
                                     @foreach($formaPagamento as $val)
                                     <option value="{{ $val->id }}">{{$val->descricao}} - (até {{$val->limiteParcelas}}x)</option>
                                     @endforeach
                                 </select>
+                                <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                             </div>
                             <div class="mb-4">
                                 <label for="codTipoAnuncio" class="block text-sm font-medium leading-6 text-gray-900">Tipo do Anuncio</label>
-                                <select id="codTipoAnuncio" name="codTipoAnuncio" class="obrigatorio block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                <select id="codTipoAnuncio" name="codTipoAnuncio" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                     <option value="">-- Selecione --</option>
                                     @foreach($tipoAnuncio as $val)
                                     <option value="{{ $val->id }}">{{$val->descricao}}</option>
                                     @endforeach
                                 </select>
+                                <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                             </div>
                             <div class="mb-4">
                                 <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Imagens do produto</label>
@@ -59,11 +92,11 @@
                                         <div class="mt-4 flex text-sm leading-6 text-gray-600">
                                             <label for="imagensUpload" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
                                                 <span>Selecione as fotos</span>
-                                                <input id="imagensUpload" name="imagensUpload[]" type="file" class="obrigatorio sr-only" multiple>
+                                                <input id="imagensUpload" name="imagensUpload[]" type="file" class="obrigatorio sr-only arquivos" multiple>
                                             </label>
-                                            <!-- <p class="pl-1">ou arraste e solte</p> -->
                                         </div>
                                         <p class="text-xs leading-5 text-gray-600">PNG, JPG até 10MB</p>
+                                        <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +187,7 @@
                                 @endempty
                             </div>
                             <div class="mt-6 flex items-center justify-end">
-                                <button type="button" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Salvar</button>
+                                <button type="button" id="btnGravar" name="btnGravar" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Salvar</button>
                             </div>
                         </form>
                     </div>

@@ -212,70 +212,92 @@ class Dashboard extends Controller
         $codFormaPagamento = $req->input('codFormaPagamento');
         $codTipoAnuncio = $req->input('codTipoAnuncio');
 
-        //imagens
-        if ($req->hasFile('imagensUpload')) {
-            foreach ($req->file('imagensUpload') as $arquivo) {
-                $ext = $arquivo->extension();
-                $nomeImagem = md5($arquivo->getClientOriginalName() . strtotime("now")) . "." . $ext;
-                $arquivo->move(public_path('arquivos/imagens'), $nomeImagem);
-                $arrayImagens[] = $nomeImagem;
-            }
+        if ($titulo == "") {
+            $msg = "O nome do produto é obrigatório.";
+            $erro = true;
+        } else if ($descricao == "") {
+            $msg = "A descrição do produto é obrigatória.";
+            $erro = true;
+        } else if ($codFormaPagamento == "") {
+            $msg = "A forma de pagamento é obrigatória.";
+            $erro = true;
+        } else if ($codTipoAnuncio == "") {
+            $msg = "O tipo de anuncio é obrigatório.";
+            $erro = true;
         }
 
-        //video
-        if ($req->hasFile('videoUpload')) {
-            $arquivoVideo = $req->videoUpload;
-            $ext = $arquivoVideo->extension();
-            $nomeVideo = md5($arquivoVideo->getClientOriginalName() . strtotime("now")) . "." . $ext;
-            $req->videoUpload->move(public_path('arquivos/videos'), $nomeVideo);
-        }
-
-        try {
-            $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio) VALUES (";
-            $sql .= $this->validarCampo($titulo, 'S');
-            $sql .= ",".$this->validarCampo($descricao, 'S');
-            $sql .= ",".$this->validarCampo($codFormaPagamento, 'N');
-            $sql .= ",".$this->validarCampo($codTipoAnuncio, 'N');
-            $sql .= ")";
-            $rsFormaPag = DB::statement($sql);
-            if ($rsFormaPag) {
-                $msg = "Anuncio inserido com sucesso.";
-                $idAnuncio = DB::getPdo()->lastInsertId();
-            } else {
-                $msg = "Erro ao inserir anuncio.";
-                $erro = true;
-            }
-
-            if (!$erro && $nomeVideo != "") {
-                $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
-                $sql .= $this->validarCampo($idAnuncio, 'N');
-                $sql .= ",".$this->validarCampo($nomeVideo, 'S');
-                $sql .= ",'V'";
-                $sql .= ")";
-                DB::statement($sql);
-            }
-
-            if (!$erro && count($arrayImagens) > 0) {
-                for ($x = 0; count($arrayImagens) > $x; $x++) {
-                    $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
-                    $sql .= $this->validarCampo($idAnuncio, 'N');
-                    $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
-                    $sql .= ",'I'";
-                    $sql .= ")";
-                    DB::statement($sql);
+        if (!$erro) {
+            //imagens
+            if ($req->hasFile('imagensUpload')) {
+                foreach ($req->file('imagensUpload') as $arquivo) {
+                    $ext = $arquivo->extension();
+                    $nomeImagem = md5($arquivo->getClientOriginalName() . strtotime("now")) . "." . $ext;
+                    $arquivo->move(public_path('arquivos/imagens'), $nomeImagem);
+                    $arrayImagens[] = $nomeImagem;
                 }
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $idAnuncio . "#" . $msg;
+            //video
+            if ($req->hasFile('videoUpload')) {
+                $arquivoVideo = $req->videoUpload;
+                $ext = $arquivoVideo->extension();
+                $nomeVideo = md5($arquivoVideo->getClientOriginalName() . strtotime("now")) . "." . $ext;
+                $req->videoUpload->move(public_path('arquivos/videos'), $nomeVideo);
             }
-        } catch (\Exception $e) {
+
+            if (sizeof($arrayImagens) == 0) {
+                $msg = "É necessário incluir pelo menos uma imagem do produto.";
+                $erro = true;
+            }
+    
+            if (!$erro) {
+                try {
+                    $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio) VALUES (";
+                    $sql .= $this->validarCampo($titulo, 'S');
+                    $sql .= ",".$this->validarCampo($descricao, 'S');
+                    $sql .= ",".$this->validarCampo($codFormaPagamento, 'N');
+                    $sql .= ",".$this->validarCampo($codTipoAnuncio, 'N');
+                    $sql .= ")";
+                    $rsFormaPag = DB::statement($sql);
+                    if ($rsFormaPag) {
+                        $msg = "Anuncio inserido com sucesso.";
+                        $idProduto = DB::getPdo()->lastInsertId();
+                    } else {
+                        $msg = "Erro ao inserir anuncio.";
+                        $erro = true;
+                    }
+        
+                    if (!$erro && $nomeVideo != "") {
+                        $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
+                        $sql .= $this->validarCampo($idProduto, 'N');
+                        $sql .= ",".$this->validarCampo($nomeVideo, 'S');
+                        $sql .= ",'V'";
+                        $sql .= ")";
+                        DB::statement($sql);
+                    }
+        
+                    if (!$erro && count($arrayImagens) > 0) {
+                        for ($x = 0; count($arrayImagens) > $x; $x++) {
+                            $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
+                            $sql .= $this->validarCampo($idProduto, 'N');
+                            $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
+                            $sql .= ",'I'";
+                            $sql .= ")";
+                            DB::statement($sql);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $msg = "Erro no cadastro.";
+                    $erro = true;
+                }
+            }
+        }
+    
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $idProduto]);
         }
     }
 
@@ -286,30 +308,37 @@ class Dashboard extends Controller
         $msg = "";
         $erro = false;
         $descricao = $req->input('descricao');
+        
+        if ($descricao == "") {
+            $msg = "A descrição do tipo do anuncio é obrigatória.";
+            $erro = true;
+        }
 
-        try {
-            $sql  = "INSERT INTO tipo_anuncio (descricao) VALUES (";
-            $sql .= $this->validarCampo($descricao, 'S');
-            $sql .= ")";
-            $rsTipoAnuncio = DB::statement($sql);
-            if ($rsTipoAnuncio) {
-                $msg = "Tipo do anuncio inserido com sucesso.";
-                $idAnuncio = DB::getPdo()->lastInsertId();
-            } else {
-                $msg = "Erro ao inserir o tipo do anuncio.";
+        if (!$erro) {
+            try {
+                $sql  = "INSERT INTO tipo_anuncio (descricao) VALUES (";
+                $sql .= $this->validarCampo($descricao, 'S');
+                $sql .= ")";
+                $rsTipoAnuncio = DB::statement($sql);
+                if ($rsTipoAnuncio) {
+                    $msg = "Tipo do anuncio inserido com sucesso.";
+                    $idAnuncio = DB::getPdo()->lastInsertId();
+                } else {
+                    $msg = "Erro ao inserir o tipo do anuncio.";
+                    $erro = true;
+                }
+            } catch (\Exception $e) {
+                $msg = "Erro no cadastro.";
                 $erro = true;
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $idAnuncio . "#" . $msg;
-            }
-        } catch (\Exception $e) {
+        }
+    
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $idAnuncio]);
         }
     }
 
@@ -321,31 +350,41 @@ class Dashboard extends Controller
         $erro = false;
         $descricao = $req->input('descricao');
         $parcelas = $req->input('parcelas');
+        
+        if ($descricao == "") {
+            $msg = "A descrição da forma de pagamento é obrigatória.";
+            $erro = true;
+        } else if ($parcelas = "") {
+            $msg = "O limite de parcelas é obrigatório.";
+            $erro = true;
+        }
 
-        try {
-            $sql  = "INSERT INTO forma_pagamento (descricao,limiteParcelas) VALUES (";
-            $sql .= $this->validarCampo($descricao, 'S');
-            $sql .= ",".$this->validarCampo($parcelas, 'N');
-            $sql .= ")";
-            $rsFormaPag = DB::statement($sql);
-            if ($rsFormaPag) {
-                $msg = "Forma de pagamento inserida com sucesso.";
-                $idAnuncio = DB::getPdo()->lastInsertId();
-            } else {
-                $msg = "Erro ao inserir forma de pagamento.";
+        if (!$erro) {
+            try {
+                $sql  = "INSERT INTO forma_pagamento (descricao,limiteParcelas) VALUES (";
+                $sql .= $this->validarCampo($descricao, 'S');
+                $sql .= ",".$this->validarCampo($parcelas, 'N');
+                $sql .= ")";
+                $rsFormaPag = DB::statement($sql);
+                if ($rsFormaPag) {
+                    $msg = "Forma de pagamento inserida com sucesso.";
+                    $idFormaPagamento = DB::getPdo()->lastInsertId();
+                } else {
+                    $msg = "Erro ao inserir forma de pagamento.";
+                    $erro = true;
+                }
+            } catch (\Exception $e) {
+                $msg = "Erro no cadastro.";
                 $erro = true;
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $idAnuncio . "#" . $msg;
-            }
-        } catch (\Exception $e) {
+        }
+    
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $idFormaPagamento]);
         }
     }
 
@@ -364,69 +403,86 @@ class Dashboard extends Controller
         $codFormaPagamento = $req->input('codFormaPagamento');
         $codTipoAnuncio = $req->input('codTipoAnuncio');
 
-        //imagens
-        if ($req->hasFile('imagensUpload')) {
-            foreach ($req->file('imagensUpload') as $arquivo) {
-                $ext = $arquivo->extension();
-                $nomeImagem = md5($arquivo->getClientOriginalName() . strtotime("now")) . "." . $ext;
-                $arquivo->move(public_path('arquivos/imagens'), $nomeImagem);
-                $arrayImagens[] = $nomeImagem;
-            }
+        if ($titulo == "") {
+            $msg = "O nome do produto é obrigatório.";
+            $erro = true;
+        } else if ($descricao == "") {
+            $msg = "A descrição do produto é obrigatória.";
+            $erro = true;
+        } else if ($codFormaPagamento == "") {
+            $msg = "A forma de pagamento é obrigatória.";
+            $erro = true;
+        } else if ($codTipoAnuncio == "") {
+            $msg = "O tipo de anuncio é obrigatório.";
+            $erro = true;
         }
 
-        //video
-        if ($req->hasFile('videoUpload')) {
-            $arquivoVideo = $req->videoUpload;
-            $ext = $arquivoVideo->extension();
-            $nomeVideo = md5($arquivoVideo->getClientOriginalName() . strtotime("now")) . "." . $ext;
-            $req->videoUpload->move(public_path('arquivos/videos'), $nomeVideo);
-        }
-
-        try {
-            $sql  = " UPDATE produtos SET ";
-            $sql .= " titulo = ".$this->validarCampo($titulo, 'S');
-            $sql .= " ,descricao = ".$this->validarCampo($descricao, 'S');
-            $sql .= " ,codFormaPagamento = ".$this->validarCampo($codFormaPagamento, 'N');
-            $sql .= " ,codTipoAnuncio = ".$this->validarCampo($codTipoAnuncio, 'N');
-            $sql .= " WHERE id = ".$id;
-            $rsFormaPag = DB::statement($sql);
-            if ($rsFormaPag) {
-                $msg = "Anuncio atualizado com sucesso.";
-            } else {
-                $msg = "Erro ao atualizar anuncio.";
-                $erro = true;
-            }
-
-            if (!$erro && $nomeVideo != "") {
-                $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
-                $sql .= $this->validarCampo($id, 'N');
-                $sql .= ",".$this->validarCampo($nomeVideo, 'S');
-                $sql .= ",'V'";
-                $sql .= ")";
-                DB::statement($sql);
-            }
-
-            if (!$erro && count($arrayImagens) > 0) {
-                for ($x = 0; count($arrayImagens) > $x; $x++) {
-                    $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
-                    $sql .= $this->validarCampo($id, 'N');
-                    $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
-                    $sql .= ",'I'";
-                    $sql .= ")";
-                    DB::statement($sql);
+        if (!$erro) {
+            //imagens
+            if ($req->hasFile('imagensUpload')) {
+                foreach ($req->file('imagensUpload') as $arquivo) {
+                    $ext = $arquivo->extension();
+                    $nomeImagem = md5($arquivo->getClientOriginalName() . strtotime("now")) . "." . $ext;
+                    $arquivo->move(public_path('arquivos/imagens'), $nomeImagem);
+                    $arrayImagens[] = $nomeImagem;
                 }
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $id . "#" . $msg;
+            //video
+            if ($req->hasFile('videoUpload')) {
+                $arquivoVideo = $req->videoUpload;
+                $ext = $arquivoVideo->extension();
+                $nomeVideo = md5($arquivoVideo->getClientOriginalName() . strtotime("now")) . "." . $ext;
+                $req->videoUpload->move(public_path('arquivos/videos'), $nomeVideo);
             }
-        } catch (\Exception $e) {
+
+            if (!$erro) {
+                try {
+                    $sql  = " UPDATE produtos SET ";
+                    $sql .= " titulo = ".$this->validarCampo($titulo, 'S');
+                    $sql .= " ,descricao = ".$this->validarCampo($descricao, 'S');
+                    $sql .= " ,codFormaPagamento = ".$this->validarCampo($codFormaPagamento, 'N');
+                    $sql .= " ,codTipoAnuncio = ".$this->validarCampo($codTipoAnuncio, 'N');
+                    $sql .= " WHERE id = ".$id;
+                    $rsFormaPag = DB::statement($sql);
+                    if ($rsFormaPag) {
+                        $msg = "Anuncio atualizado com sucesso.";
+                    } else {
+                        $msg = "Erro ao atualizar anuncio.";
+                        $erro = true;
+                    }
+    
+                    if (!$erro && $nomeVideo != "") {
+                        $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
+                        $sql .= $this->validarCampo($id, 'N');
+                        $sql .= ",".$this->validarCampo($nomeVideo, 'S');
+                        $sql .= ",'V'";
+                        $sql .= ")";
+                        DB::statement($sql);
+                    }
+    
+                    if (!$erro && count($arrayImagens) > 0) {
+                        for ($x = 0; count($arrayImagens) > $x; $x++) {
+                            $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
+                            $sql .= $this->validarCampo($id, 'N');
+                            $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
+                            $sql .= ",'I'";
+                            $sql .= ")";
+                            DB::statement($sql);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $msg = "Erro no cadastro.";
+                    $erro = true;
+                }
+            }
+        }
+    
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
     }
 
@@ -437,29 +493,36 @@ class Dashboard extends Controller
         $msg = "";
         $erro = false;
         $descricao = $req->input('descricao');
+        
+        if ($descricao == "") {
+            $msg = "A descrição do tipo do anuncio é obrigatória.";
+            $erro = true;
+        }
 
-        try {
-            $sql  = " UPDATE tipo_anuncio SET ";
-            $sql .= " descricao = ".$this->validarCampo($descricao, 'S');
-            $sql .= " WHERE id = ".$id;
-            $rsTipoAnuncio = DB::statement($sql);
-            if ($rsTipoAnuncio) {
-                $msg = "Tipo do anuncio atualizado com sucesso.";
-            } else {
-                $msg = "Erro ao atualizar o tipo do anuncio.";
+        if (!$erro) {
+            try {
+                $sql  = " UPDATE tipo_anuncio SET ";
+                $sql .= " descricao = ".$this->validarCampo($descricao, 'S');
+                $sql .= " WHERE id = ".$id;
+                $rsTipoAnuncio = DB::statement($sql);
+                if ($rsTipoAnuncio) {
+                    $msg = "Tipo do anuncio atualizado com sucesso.";
+                } else {
+                    $msg = "Erro ao atualizar o tipo do anuncio.";
+                    $erro = true;
+                }
+            } catch (\Exception $e) {
+                $msg = "Erro no cadastro.";
                 $erro = true;
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $id . "#" . $msg;
-            }
-        } catch (\Exception $e) {
+        }
+    
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
     }
 
@@ -471,30 +534,40 @@ class Dashboard extends Controller
         $erro = false;
         $descricao = $req->input('descricao');
         $parcelas = $req->input('parcelas');
+        
+        if ($descricao == "") {
+            $msg = "A descrição da forma de pagamento é obrigatória.";
+            $erro = true;
+        } else if ($parcelas = "") {
+            $msg = "O limite de parcelas é obrigatório.";
+            $erro = true;
+        }
 
-        try {
-            $sql  = " UPDATE forma_pagamento SET";
-            $sql .= " descricao = ".$this->validarCampo($descricao, 'S');
-            $sql .= " ,limiteParcelas = ".$this->validarCampo($parcelas, 'N');
-            $sql .= " WHERE id = ".$id;
-            $rsFormaPag = DB::statement($sql);
-            if ($rsFormaPag) {
-                $msg = "Forma de pagamento atualizada com sucesso.";
-            } else {
-                $msg = "Erro ao atualizar forma de pagamento.";
+        if (!$erro) {
+            try {
+                $sql  = " UPDATE forma_pagamento SET";
+                $sql .= " descricao = ".$this->validarCampo($descricao, 'S');
+                $sql .= " ,limiteParcelas = ".$this->validarCampo($parcelas, 'N');
+                $sql .= " WHERE id = ".$id;
+                $rsFormaPag = DB::statement($sql);
+                if ($rsFormaPag) {
+                    $msg = "Forma de pagamento atualizada com sucesso.";
+                } else {
+                    $msg = "Erro ao atualizar forma de pagamento.";
+                    $erro = true;
+                }
+            } catch (\Exception $e) {
+                $msg = "Erro no cadastro.";
                 $erro = true;
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $id . "#" . $msg;
-            }
-        } catch (\Exception $e) {
+        }
+    
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
     }
 

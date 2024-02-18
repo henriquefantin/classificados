@@ -5379,6 +5379,14 @@ __webpack_require__.r(__webpack_exports__);
 (0,tw_elements__WEBPACK_IMPORTED_MODULE_0__.initTE)({
   Carousel: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Carousel
 });
+(0,tw_elements__WEBPACK_IMPORTED_MODULE_0__.initTE)({
+  Validation: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Validation,
+  Input: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Input
+});
+(0,tw_elements__WEBPACK_IMPORTED_MODULE_0__.initTE)({
+  Modal: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Modal,
+  Ripple: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Ripple
+});
 
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_2__["default"];
