@@ -338,6 +338,7 @@ class Dashboard extends Controller
             return response()->json(["success" => false, "msg" => $msg]);
         } else {
             DB::commit();
+            // return redirect('/listar/anuncio')->with('mensagemAlertSuccess', $msg);
             return response()->json(["success" => true, "msg" => $msg, "id" => $idAnuncio]);
         }
     }

@@ -48,7 +48,6 @@
         </div>
     </div>
 
-    
     <!-- PopUp de aviso mensagem-->
     <button type="button" id="btnModalAvisoMsg" data-te-target="#avisoMsg" data-te-ripple-init data-te-ripple-color="light" data-te-toggle="modal" class="hidden"></button>
     <div id="avisoMsg" data-te-modal-init data-te-backdrop="static" data-te-keyboard="false" tabindex="-1" aria-modal="true" role="dialog" class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" aria-labelledby="avisoMsgTitle" >

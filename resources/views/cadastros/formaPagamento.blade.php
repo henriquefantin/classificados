@@ -19,9 +19,10 @@
                 success: function(data) {
                     modal.classList.add('hidden');
                     if (data.success) {
-                        console.log(data.msg);
+                        window.location.href = "{{ route('listarFormaPagamento', ['tipo' => 'A']) }}?mensagem=" + encodeURIComponent(data.msg);
                     } else {
-                        console.log(data.msg);
+                        $('#btnModalAvisoMsg').click();
+                        $('#mensagemRetorno').text(data.msg);
                     }
                 }
             });
