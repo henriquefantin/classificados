@@ -14,6 +14,26 @@ use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
 {
+    public function validarCampo($valor, $tipo)
+    {
+        // Se o valor for nulo, retornar NULL
+        if ($valor === null) {
+            return 'NULL';
+        }
+        // Determinar o tipo e formatar a string SQL
+        switch ($tipo) {
+            case 'S':
+                return "'$valor'";
+            case 'N':
+                return $valor;
+                // Adicione mais casos conforme necessário
+
+                // Se o tipo não for reconhecido, trate como string por padrão
+            default:
+                return "'$valor'";
+        }
+    }
+
     /**
      * Display the registration view.
      *
@@ -41,7 +61,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $empresa = Empresa::create([
-            'name' => $request->nomeEmpresa,
+            'nome' => $request->nomeEmpresa,
             'cnpj' => $request->cnpj,
             'email' => $request->email,
             'telefone' => $request->telefone,
@@ -51,6 +71,7 @@ class RegisteredUserController extends Controller
             'cidade' => $request->cidade,
             'bairro' => $request->bairro,
             'rua' => $request->rua,
+            'numero' => $request->numero,
             'complemento' => $request->complemento,
         ]);
 

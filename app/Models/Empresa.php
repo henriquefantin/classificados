@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $cidade
  * @property string $bairro
  * @property string $rua
+ * @property string $numero
  * @property string $complemento
  * @property int $nivelCliente
  * @property string $created_at
@@ -41,5 +42,5 @@ class Empresa extends Model
     /**
      * @var array
      */
-    protected $fillable = ['nome', 'cnpj', 'email', 'telefone', 'celular', 'cep', 'pais', 'estado', 'cidade', 'bairro', 'rua', 'complemento', 'nivelCliente', 'created_at', 'updated_at'];
+    protected $fillable = ['nome', 'cnpj', 'email', 'telefone', 'celular', 'cep', 'pais', 'estado', 'cidade', 'bairro', 'rua', 'numero', 'complemento', 'nivelCliente', 'created_at', 'updated_at'];
 }

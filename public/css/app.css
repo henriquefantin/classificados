@@ -1232,6 +1232,9 @@ input[type="range"]:active::-webkit-slider-thumb {
 .mt-1 {
   margin-top: 0.25rem;
 }
+.mt-10 {
+  margin-top: 2.5rem;
+}
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -2850,6 +2853,9 @@ input[type="range"]:active::-webkit-slider-thumb {
 }
 .font-black {
   font-weight: 900;
+}
+.font-bold {
+  font-weight: 700;
 }
 .font-light {
   font-weight: 300;
@@ -4617,8 +4623,8 @@ input[type="range"]:active::-webkit-slider-thumb {
     max-width: 8rem;
   }
 
-  .sm\:max-w-md {
-    max-width: 28rem;
+  .sm\:max-w-4xl {
+    max-width: 56rem;
   }
 
   .sm\:max-w-xs {
