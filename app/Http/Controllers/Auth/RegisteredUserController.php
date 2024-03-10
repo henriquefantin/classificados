@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
         $empresa = Empresa::create([
             'nome' => $request->nomeEmpresa,
             'cnpj' => $request->cnpj,
-            'email' => $request->email,
+            'email' => $request->emailEmpresa,
             'telefone' => $request->telefone,
             'celular' => $request->celular,
             'cep' => $request->cep,
@@ -74,15 +74,18 @@ class RegisteredUserController extends Controller
             'numero' => $request->numero,
             'complemento' => $request->complemento,
         ]);
+        if ($empresa) {
+            $codigoEmpresa = $empresa->id;
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'tipo' => 1,
+                'ativo' => 'N',
+                'codEmpresa' => $codigoEmpresa,
+            ]);
+        }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'tipo' => 1,
-            'ativo' => 'N',
-            'codEmpresa' => $empresa->id,
-        ]);
 
         event(new Registered($user));
 

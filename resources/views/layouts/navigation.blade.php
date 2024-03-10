@@ -21,11 +21,14 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+                @if (Auth::user()->tipo == 0 || (Auth::user()->tipo == 1 && Auth::user()->ativo == "S"))
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('listarAnuncio', ['tipo' => 'A'])" :active="request()->routeIs('listarAnuncio') || request()->routeIs('novoAnuncio')">
                         {{ __('Anuncios') }}
                     </x-nav-link>
                 </div>
+                @endif
+                @if (Auth::user()->tipo == 0)
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('listarTipoAnuncio', ['tipo' => 'A'])" :active="request()->routeIs('listarTipoAnuncio') || request()->routeIs('novoTipoAnuncio')">
                         {{ __('Tipo Anuncio') }}
@@ -36,6 +39,12 @@
                         {{ __('Forma Pagamento') }}
                     </x-nav-link>
                 </div>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    <x-nav-link :href="route('listarClientes')" :active="request()->routeIs('listarClientes') || request()->routeIs('editarCliente')">
+                        {{ __('Clientes') }}
+                    </x-nav-link>
+                </div>
+                @endif
             </div>
 
             <!-- Settings Dropdown -->

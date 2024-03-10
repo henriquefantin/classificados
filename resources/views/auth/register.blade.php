@@ -37,6 +37,10 @@
                 <x-input id="cnpj" class="block mt-1 w-full" type="text" name="cnpj" required autofocus />
                 <p class="mt-2 text-sm text-red-600 oculto">CNPJ inválido!</p>
             </div>
+            <div class="mt-4">
+                <x-label for="emailEmpresa" :value="__('Email Empresa')" />
+                <x-input id="emailEmpresa" class="block mt-1 w-full" type="email" name="emailEmpresa" :value="old('email')" required />
+            </div>
             <div>
                 <x-label for="telefone" :value="__('Telefone')" />
                 <x-input id="telefone" class="phoneMask block mt-1 w-full" type="text" name="telefone" autofocus />

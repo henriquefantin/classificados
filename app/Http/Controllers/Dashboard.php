@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class Dashboard extends Controller
@@ -46,6 +47,9 @@ class Dashboard extends Controller
         } else if ($tipo == "E") {
             $sql .= " WHERE P.dataFim IS NOT NULL ";
         }
+        if (Auth::user()->tipo == 1) {
+            $sql .= " AND P.codEmpresa = ". Auth::user()->codEmpresa;
+        }
         $sql .= " ORDER BY P.created_at DESC ";
         $rsLista = DB::select($sql);
 
@@ -78,6 +82,16 @@ class Dashboard extends Controller
         $rsLista = DB::select($sql);
 
         return view('listas.formaPagamento', ['lista' => $rsLista, 'tipo' => $tipo]);
+    }
+
+    function listarClientes() {
+        $sql  = " SELECT id, nome, cnpj, IFNULL(nivelCliente,'-') AS nivelCliente, ";
+        $sql .= " IFNULL((SELECT 'Inativo' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'Ativo') AS status ";
+        $sql .= " FROM empresa E ";
+        $sql .= " ORDER BY nome ";
+        $rsLista = DB::select($sql);
+
+        return view('listas.clientes', ['lista' => $rsLista]);
     }
 
     //Views - Cadastro
@@ -195,6 +209,19 @@ class Dashboard extends Controller
 
         $actionForm = route('atualizarFormaPagamento', ['id' => $id]);
         return view('cadastros.formaPagamento', ['actionForm' => $actionForm, 'pagamento' => $rsFormaPag[0]]);
+    }
+
+    function editarCliente($id)
+    {
+        $sql  = " SELECT nome, cnpj, IFNULL(nivelCliente,'-') AS nivelCliente, ";
+        $sql .= " IFNULL((SELECT 'Inativo' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'Ativo') AS status ";
+        $sql .= " FROM empresa E ";
+        $sql .= " WHERE E.id = ".$id;
+        $sql .= " ORDER BY nome ";
+        $rsEmpresa = DB::select($sql);
+
+        $actionForm = route('atualizarCliente', ['id' => $id]);
+        return view('cadastros.cliente', ['actionForm' => $actionForm, 'empresa' => $rsEmpresa[0]]);
     }
 
     //Insert
@@ -570,6 +597,11 @@ class Dashboard extends Controller
             DB::commit();
             return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
+    }
+
+    function atualizarCliente(Request $req, $id) 
+    {
+        
     }
 
     //Delete
