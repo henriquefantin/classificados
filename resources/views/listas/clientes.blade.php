@@ -1,3 +1,34 @@
+<?php
+function descricaoNivel($nivel) {
+    switch ($nivel) {
+        case 1:
+            return "Basico";
+            break;
+        case 2:
+            return "Médio";
+            break;
+        case 3:
+            return "Alto";
+            break;
+        default:
+            return "-";
+    }
+}
+
+function descricaoStatus($status) {
+    switch ($status) {
+        case 'S':
+            return "Ativo";
+            break;
+        case 'N':
+            return "Inativo";
+            break;
+        default:
+            return "-";
+    }
+}
+?>
+
 @section('scripts')
 <script>
 </script>
@@ -44,8 +75,8 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4">{{ $reg->nome }}</td>
                                 <td class="px-6 py-4">{{ $reg->cnpj }}</td>
-                                <td class="px-6 py-4">{{ $reg->nivelCliente }}</td>
-                                <td class="px-6 py-4">{{ $reg->status }}</td>
+                                <td class="px-6 py-4">{{ descricaoNivel($reg->nivelCliente) }}</td>
+                                <td class="px-6 py-4">{{ descricaoStatus($reg->ativo) }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex justify-end gap-4">
                                         <a x-data="{ tooltip: 'Delete' }" href="#">

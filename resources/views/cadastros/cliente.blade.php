@@ -28,6 +28,12 @@
             });
         }
     });
+
+    @empty($empresa)
+    @else
+    $("#nivel").val("{{$empresa->nivelCliente}}");
+    $("#ativo").val("{{$empresa->ativo}}");
+    @endempty
 </script>
 @endsection
 
@@ -53,6 +59,25 @@
                                 <div class="mb-4 col-span-1 col-start-1">
                                     <label for="cnpj" class="block text-sm font-medium leading-6 text-gray-900">CNPJ</label>
                                     <input type="text" id="cnpj" name="cnpj" value="@empty($empresa)@else{{$empresa->cnpj}}@endempty" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer" disabled>
+                                </div>
+                                <div class="mb-4 col-span-1 col-start-1">
+                                    <label for="nivel" class="block text-sm font-medium leading-6 text-gray-900">Nível</label>
+                                    <select id="nivel" name="nivel" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                        <option value="">-- Selecione --</option>
+                                        <option value="1">Basico</option>
+                                        <option value="2">Médio</option>
+                                        <option value="3">Alto</option>
+                                    </select>
+                                    <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
+                                </div>
+                                <div class="mb-4 col-span-1 col-start-1">
+                                    <label for="ativo" class="block text-sm font-medium leading-6 text-gray-900">Status</label>
+                                    <select id="ativo" name="ativo" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                                        <option value="">-- Selecione --</option>
+                                        <option value="N">Inativo</option>
+                                        <option value="S">Ativo</option>
+                                    </select>
+                                    <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                                 </div>
                                 <div class="mt-6 flex items-center justify-end col-span-3">
                                     <button type="button" id="btnGravar" name="btnGravar" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Salvar</button>

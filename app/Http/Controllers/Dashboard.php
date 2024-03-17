@@ -20,10 +20,8 @@ class Dashboard extends Controller
                 return "'$valor'";
             case 'N':
                 return $valor;
-                // Adicione mais casos conforme necessário
-
-                // Se o tipo não for reconhecido, trate como string por padrão
             default:
+                // Se o tipo não for reconhecido, trate como string por padrão
                 return "'$valor'";
         }
     }
@@ -86,7 +84,7 @@ class Dashboard extends Controller
 
     function listarClientes() {
         $sql  = " SELECT id, nome, cnpj, IFNULL(nivelCliente,'-') AS nivelCliente, ";
-        $sql .= " IFNULL((SELECT 'Inativo' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'Ativo') AS status ";
+        $sql .= " IFNULL((SELECT 'N' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'S') AS ativo ";
         $sql .= " FROM empresa E ";
         $sql .= " ORDER BY nome ";
         $rsLista = DB::select($sql);
@@ -213,8 +211,8 @@ class Dashboard extends Controller
 
     function editarCliente($id)
     {
-        $sql  = " SELECT nome, cnpj, IFNULL(nivelCliente,'-') AS nivelCliente, ";
-        $sql .= " IFNULL((SELECT 'Inativo' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'Ativo') AS status ";
+        $sql  = " SELECT nome, cnpj, IFNULL(nivelCliente,'') AS nivelCliente, ";
+        $sql .= " IFNULL((SELECT 'N' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'S') AS ativo ";
         $sql .= " FROM empresa E ";
         $sql .= " WHERE E.id = ".$id;
         $sql .= " ORDER BY nome ";
@@ -601,7 +599,53 @@ class Dashboard extends Controller
 
     function atualizarCliente(Request $req, $id) 
     {
+        DB::beginTransaction();
+
+        $msg = "";
+        $erro = false;
+        $nivel = $req->input('nivel');
+        $ativo = $req->input('ativo');
+        // dd($ativo);
         
+        if ($nivel == "") {
+            $msg = "O nível é obrigatório.";
+            $erro = true;
+        } else if ($ativo == "") {
+            $msg = "O status é obrigatório.";
+            $erro = true;
+        }
+
+        if (!$erro) {
+            try {
+                $sql  = " UPDATE empresa SET";
+                $sql .= " nivelCliente = ".$this->validarCampo($nivel, 'N');
+                $sql .= " WHERE id = ".$id;
+                $rsAttEmpresa = DB::statement($sql);
+                
+                $sql  = " UPDATE users SET";
+                $sql .= " ativo = ".$this->validarCampo($ativo, 'S');
+                $sql .= " WHERE codEmpresa = ".$id;
+                $rsAttUser = DB::statement($sql);
+                
+                if ($rsAttUser && $rsAttEmpresa) {
+                    $msg = "Cliente atualizado com sucesso.";
+                } else {
+                    $msg = "Erro ao atualizar cliente.";
+                    $erro = true;
+                }
+            } catch (\Exception $e) {
+                $msg = "Erro no cadastro.";
+                $erro = true;
+            }
+        }
+    
+        if ($erro) {
+            DB::rollBack();
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
+        }
     }
 
     //Delete
