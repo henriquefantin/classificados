@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard;
+use App\Http\Controllers\Classificados;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +15,7 @@ use App\Http\Controllers\Dashboard;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/', [Classificados::class, 'listarClassificados'])->name('classificados');
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/dashboard', function () {
@@ -57,7 +55,5 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/encerrar/tipoAnuncio/{id}', [Dashboard::class, 'encerrarTipoAnuncio'])->name('encerrarTipoAnuncio');
     Route::get('/encerrar/formaPagamento/{id}', [Dashboard::class, 'encerrarFormaPagamento'])->name('encerrarFormaPagamento');
 });
-
-
 
 require __DIR__.'/auth.php';

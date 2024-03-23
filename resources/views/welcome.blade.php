@@ -67,6 +67,19 @@
             </div>
         </div>
     </nav>
+
+    
+    @foreach ($lista as $reg)
+        
+        <div class="flex items-center gap-4 px-2">
+            <div class="py-4">
+                <img class="h-24 w-24 rounded-lg object-cover object-center" src="{{ url('arquivos/imagens/'.$reg->imagem) }}" alt="" />
+            </div>
+            <div class="py-4">
+                {{ $reg->titulo }}
+            </div>
+        </div>
+    @endforeach
 </body>
 
 </html>
