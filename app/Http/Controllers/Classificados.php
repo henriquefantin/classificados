@@ -10,7 +10,8 @@ class Classificados extends Controller
 {
     function listarClassificados()
     {
-        $sql  = " SELECT P.id, P.titulo, T.descricao AS tipo, F.descricao AS pagamento, ";
+        $sql  = " SELECT P.id, P.titulo, P.descricao AS descricao, P.valor, ";
+        $sql .= " T.descricao AS tipo, F.descricao AS pagamento, ";
         $sql .= " ( ";
         $sql .= "   SELECT AP.arquivo ";
         $sql .= "   FROM arquivo_produto AP ";

@@ -4,10 +4,15 @@ function validarFormulario(idForm, validarClasse) {
   $("form[name='" + idForm + "'] ." + validarClasse).each(function () {
     if ($(this).val() == "") {
       if (!$(this).hasClass("arquivos")) {
+        console.log("entrou");
         $(this).addClass("border-red-500");
         $(this).addClass("bg-red-50");
         $(this).removeClass("border-green-500");
-        $(this).next("p").fadeIn(0);
+        if (!$(this).hasClass("valores")) {
+          $(this).next("p").fadeIn(0);
+        } else {
+          $(this).parent().next("p").fadeIn(0);
+        }
       } else {
         $(this).parent().parent().parent().parent().addClass("border-red-500");
         $(this).parent().parent().parent().parent().removeClass("border-green-500");
@@ -25,7 +30,11 @@ function validarFormulario(idForm, validarClasse) {
         $(this).removeClass("border-red-500");
         $(this).removeClass("bg-red-50");
         $(this).addClass("border-green-500");
-        $(this).next("p").fadeOut(0);
+        if (!$(this).hasClass("valores")) {
+          $(this).next("p").fadeOut(0);
+        } else {
+          $(this).parent().next("p").fadeOut(0);
+        }
       } else {
         $(this).parent().parent().parent().parent().removeClass("border-red-500");
         $(this).parent().parent().parent().parent().addClass("border-green-500");
@@ -71,17 +80,29 @@ function mascara(componente, tipo) {
         formato = '(xx)xxxx-xxxx';
       }
       break;
+    case 'moeda':
+      valor = componente.value.replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+      formato = 'xxx.xxx.xxx,xx';
+      break;
   }
-  if (valor != '') {
-    var comprimento = valor.length;
-    var caracter = '';
-    for (cont = 0; cont < comprimento; cont++) {
-      caracter = formato.substr(cont, 1);
-      if (caracter != "x" && caracter != valor.substr(cont, 1)) {
-        valor = valor.substr(0, cont) + caracter + valor.substr(cont);
+  if (valor != "") {
+    if (tipo != "moeda") {
+      var comprimento = valor.length;
+      var caracter = '';
+      for (cont = 0; cont < comprimento; cont++) {
+        caracter = formato.substr(cont, 1);
+        if (caracter != "x" && caracter != valor.substr(cont, 1)) {
+          valor = valor.substr(0, cont) + caracter + valor.substr(cont);
+        }
       }
+      valor = valor.substr(0, formato.length);
+    } else {
+      var parteInteira = valor.substring(0, valor.length - 2); // Obtém a parte inteira do valor
+      var parteDecimal = valor.substring(valor.length - 2); // Obtém a parte decimal do valor
+      var parteInteiraFormatada = parteInteira.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); // Formata a parte inteira com pontos
+      var valorFormatado = parteInteiraFormatada + ',' + parteDecimal; // Une a parte inteira formatada com a parte decimal
+      valor = valorFormatado;
     }
-    valor = valor.substr(0, formato.length);
   }
 
   componente.value = valor;

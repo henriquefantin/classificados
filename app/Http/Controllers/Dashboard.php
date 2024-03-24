@@ -28,7 +28,7 @@ class Dashboard extends Controller
 
     //Views - Lista
     function listarAnuncio($tipo = "A") {
-        $sql  = " SELECT P.id, P.titulo, T.descricao AS tipo, F.descricao AS pagamento, ";
+        $sql  = " SELECT P.id, P.titulo, T.descricao AS tipo, F.descricao AS pagamento, P.valor, ";
         $sql .= " ( ";
         $sql .= "   SELECT AP.arquivo ";
         $sql .= "   FROM arquivo_produto AP ";
@@ -142,7 +142,7 @@ class Dashboard extends Controller
         $sql .= " ORDER BY descricao ";
         $rsTipoAnuncio = DB::select($sql);
 
-        $sql  = " SELECT id, titulo, descricao, codFormaPagamento, codTipoAnuncio ";
+        $sql  = " SELECT id, titulo, descricao, codFormaPagamento, codTipoAnuncio, valor ";
         $sql .= " FROM produtos ";
         $sql .= " WHERE id = ".$id;
         $sql .= " LIMIT 1 ";
@@ -236,12 +236,16 @@ class Dashboard extends Controller
         $descricao = $req->input('descricao');
         $codFormaPagamento = $req->input('codFormaPagamento');
         $codTipoAnuncio = $req->input('codTipoAnuncio');
+        $valor = $req->input('valor');
 
         if ($titulo == "") {
             $msg = "O nome do produto é obrigatório.";
             $erro = true;
         } else if ($descricao == "") {
             $msg = "A descrição do produto é obrigatória.";
+            $erro = true;
+        } else if ($valor == "") {
+            $msg = "O valor é obrigatório.";
             $erro = true;
         } else if ($codFormaPagamento == "") {
             $msg = "A forma de pagamento é obrigatória.";
@@ -276,11 +280,12 @@ class Dashboard extends Controller
     
             if (!$erro) {
                 try {
-                    $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio) VALUES (";
+                    $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio,valor) VALUES (";
                     $sql .= $this->validarCampo($titulo, 'S');
                     $sql .= ",".$this->validarCampo($descricao, 'S');
                     $sql .= ",".$this->validarCampo($codFormaPagamento, 'N');
                     $sql .= ",".$this->validarCampo($codTipoAnuncio, 'N');
+                    $sql .= ",".$this->validarCampo($valor, 'S');
                     $sql .= ")";
                     $rsFormaPag = DB::statement($sql);
                     if ($rsFormaPag) {
@@ -428,12 +433,16 @@ class Dashboard extends Controller
         $descricao = $req->input('descricao');
         $codFormaPagamento = $req->input('codFormaPagamento');
         $codTipoAnuncio = $req->input('codTipoAnuncio');
+        $valor = $req->input('valor');
 
         if ($titulo == "") {
             $msg = "O nome do produto é obrigatório.";
             $erro = true;
         } else if ($descricao == "") {
             $msg = "A descrição do produto é obrigatória.";
+            $erro = true;
+        } else if ($valor == "") {
+            $msg = "O valor é obrigatório.";
             $erro = true;
         } else if ($codFormaPagamento == "") {
             $msg = "A forma de pagamento é obrigatória.";
@@ -468,6 +477,7 @@ class Dashboard extends Controller
                     $sql .= " ,descricao = ".$this->validarCampo($descricao, 'S');
                     $sql .= " ,codFormaPagamento = ".$this->validarCampo($codFormaPagamento, 'N');
                     $sql .= " ,codTipoAnuncio = ".$this->validarCampo($codTipoAnuncio, 'N');
+                    $sql .= " ,valor = ".$this->validarCampo($valor, 'S');
                     $sql .= " WHERE id = ".$id;
                     $rsFormaPag = DB::statement($sql);
                     if ($rsFormaPag) {

@@ -2,7 +2,7 @@
 <script>
     $("#btnGravar").click(function() {
         let modal = document.getElementById('popupCarregando');
-        if (validarFormulario("formCadastro","obrigatorio")) {
+        if (validarFormulario("formCadastro", "obrigatorio")) {
             modal.classList.remove('hidden');
 
             let formData = new FormData(document.getElementById('formCadastro'));
@@ -10,8 +10,8 @@
                 url: "{{ $actionForm }}",
                 type: "POST",
                 cache: false,
-                processData: false,  // Não processar os dados
-                contentType: false,  // Não configurar o tipo de conteúdo
+                processData: false, // Não processar os dados
+                contentType: false, // Não configurar o tipo de conteúdo
                 data: formData,
                 error: function() {
                     modal.classList.add('hidden');
@@ -36,6 +36,10 @@
     $("#codTipoAnuncio").val("{{$produto->codTipoAnuncio}}");
     $("#imagensUpload").removeClass("obrigatorio");
     @endempty
+    
+    $('#valor').keyup(function() {
+        return mascara(this, "moeda");
+    });
 </script>
 @endsection
 
@@ -61,6 +65,16 @@
                             <div class="mb-4">
                                 <label for="descricao" class="block text-sm font-medium leading-6 text-gray-900">Descrição</label>
                                 <textarea id="descricao" name="descricao" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" rows="4" placeholder="Descrição do produto"></textarea>
+                                <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
+                            </div>
+                            <div class="mb-4">
+                                <label for="valor" class="block text-sm font-medium leading-6 text-gray-900">Valor</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-2.5 pointer-events-none">
+                                        R$
+                                    </div>
+                                    <input type="text" id="valor" name="valor" value="@empty($produto)@else{{$produto->valor}}@endempty" class="obrigatorio valores block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 ps-10 p-2.5" placeholder="Valor do produto">
+                                </div>
                                 <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                             </div>
                             <div class="mb-4">
@@ -127,23 +141,21 @@
                                     <div id="carroselImagens" class="relative w-9/12" data-te-carousel-init data-te-ride="carousel">
                                         <!--Carousel indicators-->
                                         <div class="absolute bottom-0 left-0 right-0 z-[2] mx-[15%] mb-4 flex list-none justify-center p-0" data-te-carousel-indicators>
-                                            @for ($i = 0; $i < count($imagens); $i++)
-                                                @if ($i > 0)
+                                            @for ($i = 0; $i < count($imagens); $i++) @if ($i> 0)
                                                 <button type="button" data-te-target="#carroselImagens" data-te-slide-to="{{ $i }}" class="mx-[3px] box-content h-[3px] w-[30px] flex-initial cursor-pointer border-0 border-y-[10px] border-solid border-transparent bg-white bg-clip-padding p-0 -indent-[999px] opacity-50 transition-opacity duration-[600ms] ease-[cubic-bezier(0.25,0.1,0.25,1.0)] motion-reduce:transition-none" aria-label="Slide {{ $i + 1 }}"></button>
                                                 @else
                                                 <button type="button" data-te-target="#carroselImagens" data-te-slide-to="{{ $i }}" data-te-carousel-active class="mx-[3px] box-content h-[3px] w-[30px] flex-initial cursor-pointer border-0 border-y-[10px] border-solid border-transparent bg-white bg-clip-padding p-0 -indent-[999px] opacity-50 transition-opacity duration-[600ms] ease-[cubic-bezier(0.25,0.1,0.25,1.0)] motion-reduce:transition-none" aria-current="true" aria-label="Slide {{ $i + 1 }}"></button>
                                                 @endif
-                                            @endfor
-                                            @empty($video)
-                                            @else
+                                                @endfor
+                                                @empty($video)
+                                                @else
                                                 <button type="button" data-te-target="#carroselImagens" data-te-slide-to="{{ count($imagens) }}" class="mx-[3px] box-content h-[3px] w-[30px] flex-initial cursor-pointer border-0 border-y-[10px] border-solid border-transparent bg-white bg-clip-padding p-0 -indent-[999px] opacity-50 transition-opacity duration-[600ms] ease-[cubic-bezier(0.25,0.1,0.25,1.0)] motion-reduce:transition-none" aria-label="Slide {{ count($imagens) + 1 }}"></button>
-                                            @endempty
+                                                @endempty
                                         </div>
 
                                         <!--Carousel items-->
                                         <div class="relative w-full overflow-hidden after:clear-both after:block after:content-[''] rounded-lg">
-                                            @for ($i = 0; $i < count($imagens); $i++)
-                                                @if ($i > 0)
+                                            @for ($i = 0; $i < count($imagens); $i++) @if ($i> 0)
                                                 <!--Second item-->
                                                 <div class="relative float-left -mr-[100%] hidden w-full transition-transform duration-[600ms] ease-in-out motion-reduce:transition-none" data-te-carousel-item>
                                                     <img src="{{ $imagens[$i] }}" class="block rounded-lg w-full h-80" alt="..." />
@@ -154,15 +166,15 @@
                                                     <img src="{{ $imagens[$i] }}" class="block rounded-lg w-full h-80" alt="..." />
                                                 </div>
                                                 @endif
-                                            @endfor
-                                            @empty($video)
-                                            @else
-                                            <div class="relative float-left -mr-[100%] hidden w-full !transform-none opacity-0 transition-opacity duration-[600ms] ease-in-out motion-reduce:transition-none" data-te-carousel-fade data-te-carousel-item>
-                                                <video class="block rounded-lg w-full max-h-80" autoplay muted>
-                                                    <source src="{{ $video[0] }}" type="video/mp4">
-                                                </video>
-                                            </div>
-                                            @endempty
+                                                @endfor
+                                                @empty($video)
+                                                @else
+                                                <div class="relative float-left -mr-[100%] hidden w-full !transform-none opacity-0 transition-opacity duration-[600ms] ease-in-out motion-reduce:transition-none" data-te-carousel-fade data-te-carousel-item>
+                                                    <video class="block rounded-lg w-full max-h-80" autoplay muted>
+                                                        <source src="{{ $video[0] }}" type="video/mp4">
+                                                    </video>
+                                                </div>
+                                                @endempty
                                         </div>
 
                                         <!--Carousel controls - prev item-->

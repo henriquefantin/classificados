@@ -1,3 +1,13 @@
+<?php
+    function campoVazio($valor) {
+        if ($valor != null && $valor != "") {
+            return $valor;
+        } else {
+            return "-";
+        }
+    }
+?>
+
 @section('scripts')
 <script>
     $('#statusAnuncio').val("{{ $tipo }}");
@@ -47,6 +57,7 @@
                                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Produto</th>
                                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Tipo Anuncio</th>
                                 <th scope="col" class="px-6 py-4 font-medium text-gray-900">Forma Pagamento</th>
+                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">Valor (R$)</th>
                                 <th scope="col" class="px-6 py-4 font-medium text-gray-900"></th>
                             </tr>
                         </thead>
@@ -63,6 +74,7 @@
                                 </td>
                                 <td class="px-6 py-4">{{ $reg->tipo }}</td>
                                 <td class="px-6 py-4">{{ $reg->pagamento }}</td>
+                                <td class="px-6 py-4">{{ campoVazio($reg->valor) }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex justify-end gap-4">
                                         <a x-data="{ tooltip: 'Delete' }" href="{{route('encerrarAnuncio', ['id' => $reg->id]) }}">
