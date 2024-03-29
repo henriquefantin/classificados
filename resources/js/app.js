@@ -4,13 +4,17 @@ import {
     Input,
     Carousel,
     Ripple,
+    Modal,
     initTE,
-    Modal
+    // Collapse,
+    // Dropdown,
+    // initTEW,
 } from "tw-elements";
 
 initTE({ Carousel });
 initTE({ Validation, Input });
 initTE({ Modal, Ripple });
+// initTWE({ Collapse, Dropdown });
 
 import './bootstrap';
 
