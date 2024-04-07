@@ -1,3 +1,13 @@
+$(document).ready(function() {
+  $("#divSanduicheNavbar").click(function() {
+    if ($("#navbarConteudo").is(":hidden")) {
+      $("#navbarConteudo").fadeIn(200);
+    } else {
+      $("#navbarConteudo").fadeOut(200);
+    }
+  });
+});
+
 function validarFormulario(idForm, validarClasse) {
   let camposValidados = true;
   let countFoco = 0;

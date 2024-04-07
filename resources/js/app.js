@@ -5,16 +5,14 @@ import {
     Carousel,
     Ripple,
     Modal,
+    Collapse,
     initTE,
-    // Collapse,
-    // Dropdown,
-    // initTEW,
 } from "tw-elements";
 
 initTE({ Carousel });
 initTE({ Validation, Input });
 initTE({ Modal, Ripple });
-// initTWE({ Collapse, Dropdown });
+initTE({ Collapse });
 
 import './bootstrap';
 
@@ -22,4 +20,4 @@ import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
 
-Alpine.start();
+Alpine.start();  

@@ -19,6 +19,7 @@
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/funcoes.js') }}" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </head>
 
 <body>

@@ -5387,8 +5387,9 @@ __webpack_require__.r(__webpack_exports__);
   Modal: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Modal,
   Ripple: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Ripple
 });
-// initTWE({ Collapse, Dropdown });
-
+(0,tw_elements__WEBPACK_IMPORTED_MODULE_0__.initTE)({
+  Collapse: tw_elements__WEBPACK_IMPORTED_MODULE_0__.Collapse
+});
 
 
 window.Alpine = alpinejs__WEBPACK_IMPORTED_MODULE_2__["default"];
