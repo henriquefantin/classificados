@@ -1,12 +1,26 @@
-$(document).ready(function() {
-  $("#divSanduicheNavbar").click(function() {
+$(document).ready(function () {
+  $("#divSanduicheNavbar").click(function () {
     if ($("#navbarConteudo").is(":hidden")) {
       $("#navbarConteudo").fadeIn(200);
     } else {
       $("#navbarConteudo").fadeOut(200);
     }
   });
+  $(".estadoBusca").change(function () {
+    buscarCidadeEstado($(this).val());
+  });
+  $("#descBuscaPC").click(function(){
+    buscarAnuncioDetalhe($("#descBuscaPC").val(),$("#estadoBuscaPC").val(),$("#cidadeBuscaPC").val());
+  });
+  $("#buscarAnuncioMobile").click(function(){
+    buscarAnuncioDetalhe($("#descBuscaMobile").val(),$("#estadoBuscaMobile").val(),$("#cidadeBuscaMobile").val());
+  });
 });
+
+function buscarAnuncioDetalhe(descricao,estado,cidade) {
+  let redirecionar = $("#urlClassificados").val() + "/" + descricao;
+  window.location = redirecionar;
+}
 
 function validarFormulario(idForm, validarClasse) {
   let camposValidados = true;
@@ -134,10 +148,10 @@ function mascara(componente, tipo) {
     case "cnpj":
       if (componente.value.length == 18) {
         if (validarCNPJ(componente.value)) {
-          $("#"+componente.id).next("p").fadeOut(0);
+          $("#" + componente.id).next("p").fadeOut(0);
         } else {
-          $("#"+componente.id).next("p").fadeIn(0);
-          $("#"+componente.id).val("");
+          $("#" + componente.id).next("p").fadeIn(0);
+          $("#" + componente.id).val("");
         }
       }
       break;
@@ -201,22 +215,45 @@ function validarCNPJ(cnpj) {
   return true;
 }
 
-var teste;
 function buscarCep(valor) {
   let cep = valor.replace(/\D/g, '');
   let validacep = /^[0-9]{8}$/;
 
   if (validacep.test(cep)) {
     $.ajax({
-      url: "https://viacep.com.br/ws/"+cep+"/json/",
+      url: "https://viacep.com.br/ws/" + cep + "/json/",
       type: "GET",
       cache: false,
       dataType: "json",
-      success: function(dados) {
+      success: function (dados) {
         $("#estado").val(dados.uf);
         $("#cidade").val(dados.localidade);
         $("#bairro").val(dados.bairro);
         $("#rua").val(dados.logradouro);
+      }
+    });
+  }
+}
+
+function buscarCidadeEstado(uf) {
+  //https://servicodados.ibge.gov.br/api/docs/localidades
+  let option = '<option value="">Cidade</option>';
+  if (uf != "") {
+    $.ajax({
+      url: "https://servicodados.ibge.gov.br/api/v1/localidades/estados/" + uf + "/distritos?orderBy=nome",
+      type: "GET",
+      cache: false,
+      dataType: "json",
+      beforeSend: function () {
+        $(".cidadeBusca").html('<option value="">Carregando...</option>');
+      },
+      success: function (dados) {
+        if (dados.length > 0) {
+          $.each(dados, function (i, item) {
+            option += '<option value="' + item.id + '">' + item.nome + '</option>';
+          });
+        }
+        $(".cidadeBusca").html(option);
       }
     });
   }

@@ -15,10 +15,10 @@ use App\Http\Controllers\Classificados;
 |
 */
 
-Route::get('/', [Classificados::class, 'listarClassificados'])->name('classificados');
+Route::get('/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
 
 Route::group(['middleware' => 'auth'], function() {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', function() {
         return view('dashboard');
     })->name('dashboard');
     

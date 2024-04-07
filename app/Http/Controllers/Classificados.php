@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Classificados extends Controller
 {
-    function listarClassificados()
+    function listarClassificados($busca = "", $estado = "", $cidade = "")
     {
         $sql  = " SELECT P.id, P.titulo, P.descricao AS descricao, P.valor, ";
         $sql .= " T.descricao AS tipo, F.descricao AS pagamento, ";
@@ -24,6 +24,9 @@ class Classificados extends Controller
         $sql .= "   JOIN tipo_anuncio T ON T.id = P.codTipoAnuncio ";
         $sql .= "   JOIN forma_pagamento F ON F.id = P.codFormaPagamento ";
         $sql .= " WHERE P.dataFim IS NULL ";
+        if ($busca != "") {
+            $sql .= " AND P.TITULO LIKE '%".$busca."%'";
+        }
         $sql .= " ORDER BY P.created_at DESC ";
         $rsLista = DB::select($sql);
         
