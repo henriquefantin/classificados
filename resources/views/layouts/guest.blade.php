@@ -20,42 +20,30 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/funcoes.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+
+    <script>
+        var valorEstado = "@empty($estado)@else{{$estado}}@endempty";
+        var valorCidade = "@empty($cidade)@else{{$cidade}}@endempty";
+    </script>
 </head>
 
 <body>
-    <nav class="bg-blue-100 relative flex w-full flex-wrap items-center justify-between lg:py-4">
-        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            <div class="relative flex h-16 items-center justify-between">
-                <div class="flex w-full flex-wrap items-center justify-between px-3">
-                    <div class="flex flex-shrink-0 items-center">
-                        <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
-                    </div>
+    <nav class="bg-blue-100">
+        <div class="mx-auto max-w-full px-2 sm:px-6 lg:px-8">
+            <div class="relative flex sm:h-16 items-center justify-between">
 
-                    <div class="flex">
-                        <!-- Brand -->
-                        <a class="mx-2 my-1 flex items-center lg:mb-0 lg:mt-0" href="#">
-                            <img class="me-2" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" style="height: 20px" alt="TE Logo" loading="lazy" />
-                        </a>
-                        <form class="hidden md:flex">
-                            <div class="flex w-[30%] items-center justify-between">
-                                <input type="search" class="relative m-0 block flex-auto rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-3 py-1.5 text-base font-normal text-surface transition duration-300 ease-in-out focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none motion-reduce:transition-none" placeholder="Search" aria-label="Search" aria-describedby="button-addon2" />
+                <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                    <div class="hidden sm:ml-6 sm:block">
 
-                                <!-- Icone do Mapa -->
-                                <span class="cursor-pointer flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-gray-600 [&>svg]:w-5" id="basic-addon2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
-                                    </svg>
-                                </span>
-
-                                <!--Search icon-->
-                                <span class="cursor-pointer flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-gray-600 [&>svg]:w-5" id="basic-addon2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-                                    </svg>
-                                </span>
+                        <div class="flex w-full items-center justify-between">
+                            <div class="flex">
+                                <!-- Logo e Pesquisar -->
+                                <a class="mx-2 my-2 flex items-center" href="{{ route('classificados') }}">
+                                    <img class="me-2 max-w-8 min-w-8" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" alt="TE Logo" loading="lazy" />
+                                </a>
                             </div>
-                        </form>
+                        </div>
+
                     </div>
                 </div>
 
@@ -80,23 +68,39 @@
                 </div>
             </div>
         </div>
-        </div>
 
         <!-- Mobile menu, show/hide based on menu state. -->
-        <div class="sm:hidden" id="mobile-menu">
-            <div class="space-y-1 px-2 pb-3 pt-2">
-                <a href="/" class="bg-blue-300 text-black block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Classificados</a>
-                @if (Route::has('login'))
-                @auth
-                <a href="{{ url('/dashboard') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Dashboard</a>
-                @else
-                <a href="{{ route('login') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Entrar</a>
+        <div id="mobile-menu" class="sm:hidden shadow-md">
 
-                @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Anunciar</a>
-                @endif
-                @endauth
-                @endif
+            <div id="divSanduicheNavbar" class="bg-blue-300 py-3">
+                <div class="grid justify-items-end w-11/12">
+                    <span class="[&>svg]:w-8 [&>svg]:stroke-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.3">
+                            <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+
+            <div id="navbarConteudo" class="hidden">
+                <div class="grid justify-items-center mb-5">
+                    <img class="me-2 w-8 h-8" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" alt="TE Logo" loading="lazy" />
+                </div>
+
+                <div class="space-y-1 px-2 pb-3 pt-2">
+                    <a href="/" class="bg-blue-300 text-black block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Classificados</a>
+                    @if (Route::has('login'))
+                    @auth
+                    <a href="{{ url('/dashboard') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Dashboard</a>
+                    @else
+                    <a href="{{ route('login') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Entrar</a>
+
+                    @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Anunciar</a>
+                    @endif
+                    @endauth
+                    @endif
+                </div>
             </div>
         </div>
     </nav>

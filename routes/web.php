@@ -15,7 +15,15 @@ use App\Http\Controllers\Classificados;
 |
 */
 
-Route::get('/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
+
+Route::get('/', function () {
+    return redirect('/tipo/0/busca');
+});
+
+Route::get('/tipo/{tipoA?}/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
+Route::get('/tipo/{tipoA?}/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
+Route::post('/redirecionar', [Classificados::class, 'redirecionar'])->name('redirecionar');
+Route::post('/detalheProduto', [Classificados::class, 'listarClassificados'])->name('detalheProduto');
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/dashboard', function() {

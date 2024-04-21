@@ -1,3 +1,7 @@
+var urlRedirecionar = "{{ route('classificados') }}";
+var valorEstado = "";
+var valorCidade = "";
+var tipoAnuncio = "";
 $(document).ready(function () {
   $("#divSanduicheNavbar").click(function () {
     if ($("#navbarConteudo").is(":hidden")) {
@@ -9,17 +13,150 @@ $(document).ready(function () {
   $(".estadoBusca").change(function () {
     buscarCidadeEstado($(this).val());
   });
-  $("#descBuscaPC").click(function(){
-    buscarAnuncioDetalhe($("#descBuscaPC").val(),$("#estadoBuscaPC").val(),$("#cidadeBuscaPC").val());
+  $("#buscarAnuncioPC").click(function () {
+    let cidade = "";
+    if ($("#cidadeBuscaPC").val() != "") {
+      cidade = $("#cidadeBuscaPC option:selected").text();
+    }
+    buscarAnuncioDetalhe($("#descBuscaPC").val(), $("#estadoBuscaPC").val(), cidade, tipoAnuncio);
   });
-  $("#buscarAnuncioMobile").click(function(){
-    buscarAnuncioDetalhe($("#descBuscaMobile").val(),$("#estadoBuscaMobile").val(),$("#cidadeBuscaMobile").val());
+  $("#buscarAnuncioMobile").click(function () {
+    let cidade = "";
+    if ($("#cidadeBuscaMobile").val() != "") {
+      cidade = $("#cidadeBuscaMobile option:selected").text();
+    }
+    buscarAnuncioDetalhe($("#descBuscaMobile").val(), $("#estadoBuscaMobile").val(), cidade, tipoAnuncio);
   });
+  $(".buscarTipo").each(function () {
+    $(this).removeClass("bg-primary-accent-200");
+    if ($(this).attr("codigo") == tipoAnuncio) {
+      $(this).addClass("bg-primary-accent-200");
+    }
+  });
+  $(".buscarTipo").click(function () {
+    let tipoAnuncioRedirecionar = $(this).attr("codigo");
+    let url = window.location.href.split("tipo");
+    let parametros = url[1].split("/");
+    parametros[1] = tipoAnuncioRedirecionar;
+    window.location.href = url[0] + "tipo" + parametros.join("/");
+  });
+  $(".cardProduto").click(function () {
+    carregarProduto($(this).attr("codigo"));
+  });
+  atualizarBusca();
 });
 
-function buscarAnuncioDetalhe(descricao,estado,cidade) {
-  let redirecionar = $("#urlClassificados").val() + "/" + descricao;
-  window.location = redirecionar;
+function atualizarBusca() {
+  if ($("#dadoEstado").val() != "") {
+    $(".estadoBusca").val(valorEstado).change();
+  }
+}
+
+function buscarAnuncioDetalhe(descricao, estado, cidade, tipo) {
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+    }
+  });
+  $.ajax({
+    url: "/redirecionar",
+    type: "POST",
+    cache: false,
+    data: {
+      "descricao": descricao,
+      "estado": estado,
+      "cidade": cidade,
+      "tipo": tipo,
+      "random": Math.random()
+    },
+    success: function (response) {
+      if (response && response.url) {
+        window.location.href = response.url;
+      }
+    }
+  });
+}
+
+function carregarProduto(codProduto) {
+  let modal = document.getElementById('popupCarregando');
+  modal.classList.remove('hidden');
+  $("#btnProduto").click();
+  $.ajaxSetup({
+    headers: {
+      'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
+    }
+  });
+  $.ajax({
+    url: "/detalheProduto",
+    type: "POST",
+    cache: false,
+    data: {
+      "codProduto": codProduto,
+      "random": Math.random()
+    },
+    error: function () {
+      modal.classList.add('hidden');
+    },
+    success: function (response) {
+      modal.classList.add('hidden');
+      if (response) {
+        if (response.lista) {
+          let dadosLista = response.lista[0];
+          $("#tituloProduto").text(dadosLista.titulo);
+          $("#descricaoProduto").text(dadosLista.descricao);
+          $("#formaPagamento").text(dadosLista.pagamento);
+
+          $("#nomeEmpresa").text(dadosLista.nomeEmpresa);
+          if (dadosLista.email != "" && dadosLista.email != null) {
+            $("#email").text(dadosLista.email).parent().fadeIn(0);
+          } else {
+            $("#email").text("").parent().fadeOut(0);
+          }
+          if (dadosLista.celular != "" && dadosLista.celular != null) {
+            $("#celular").text(dadosLista.celular).parent().fadeIn(0);
+          } else {
+            $("#celular").text("").parent().fadeOut(0);
+          }
+          if (dadosLista.telefone != "" && dadosLista.telefone != null) {
+            $("#telefone").text(dadosLista.telefone).parent().fadeIn(0);
+          } else {
+            $("#telefone").text("").parent().fadeOut(0);
+          }
+
+          let valor = "0.00";
+          if (dadosLista.valor != "" && dadosLista.valor != null) {
+            valor = dadosLista.valor;
+          }
+          $("#valorProduto").text(valor);
+        }
+
+        $("#conteudoImg").empty();
+        $("#videoProduto").empty();
+        if (response.imagens) {
+          let dadosImgs = response.imagens;
+          let conteudoImgs = "";
+          for (let i = 0; i < dadosImgs.length; i++) {
+            conteudoImgs += '<div class="flex w-1/2 flex-wrap abrirImagem">'
+              + '<div class="w-full p-1 md:p-2 hover:scale-150">'
+              + '<img alt="gallery" class="block h-full w-full rounded-lg object-cover object-center" src="' + dadosImgs[i] + '" />'
+              + '</div>'
+              + '</div>';
+          }
+          $("#conteudoImg").append(conteudoImgs);
+          $(".abrirImagem").click(function () {
+            // Obtém o URL da imagem clicada
+            let imageUrl = $(this).children().children().attr("src");
+            // Abre a imagem em uma nova guia
+            window.open(imageUrl);
+          });
+        }
+
+        if (response.video) {
+          $("#videoProduto").append('<video class="block rounded-lg w-75 max-h-80" controls src="' + response.video + '"></video>');
+        }
+      }
+    }
+  });
 }
 
 function validarFormulario(idForm, validarClasse) {
@@ -248,12 +385,19 @@ function buscarCidadeEstado(uf) {
         $(".cidadeBusca").html('<option value="">Carregando...</option>');
       },
       success: function (dados) {
+        let codCidade = "";
         if (dados.length > 0) {
           $.each(dados, function (i, item) {
             option += '<option value="' + item.id + '">' + item.nome + '</option>';
+            if (valorCidade != "" && valorCidade == item.nome) {
+              codCidade = item.id;
+            }
           });
         }
         $(".cidadeBusca").html(option);
+        if (codCidade != "") {
+          $(".cidadeBusca").val(codCidade).change();
+        }
       }
     });
   }

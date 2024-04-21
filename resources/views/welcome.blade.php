@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Classificados</title>
 
@@ -21,12 +22,17 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/funcoes.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+
+    <script>
+        valorEstado = "@empty($estado)@else{{$estado}}@endempty";
+        valorCidade = "@empty($cidade)@else{{$cidade}}@endempty";
+        tipoAnuncio = "@empty($tipoAnuncio){{0}}@else{{$tipoAnuncio}}@endempty";
+    </script>
 </head>
 
 <body class="">
     <nav class="bg-blue-100">
-        <input type="hidden" id="urlClassificados" name="urlClassificados" value="{{ route('classificados') }}">
-        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-full px-2 sm:px-6 lg:px-8">
             <div class="relative flex sm:h-16 items-center justify-between">
 
                 <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
@@ -35,10 +41,10 @@
                         <div class="flex w-full items-center justify-between">
                             <div class="flex">
                                 <!-- Logo e Pesquisar -->
-                                <a class="mx-2 my-2 flex items-center" href="#">
-                                    <img class="me-2 h-3 w-3 lg:h-5 lg:w-5" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" alt="TE Logo" loading="lazy" />
+                                <a class="mx-2 my-2 flex items-center" href="{{ route('classificados', ['tipoA' => 0]) }}">
+                                    <img class="me-2 max-w-8 min-w-8" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" alt="TE Logo" loading="lazy" />
                                 </a>
-                                <input type="search" id="descBuscaPC" name="descBuscaPC" class="relative m-0 block flex-auto rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-3 py-1.5 text-base font-normal text-surface transition duration-300 ease-in-out focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none motion-reduce:transition-none" placeholder="Buscar" aria-label="Buscar" aria-describedby="button-addon2" />
+                                <input type="search" id="descBuscaPC" name="descBuscaPC" value="@empty($busca)@else{{$busca}}@endempty" class="relative m-0 block flex-auto rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-3 py-1.5 text-base font-normal text-surface transition duration-300 ease-in-out focus:border-primary focus:text-gray-700 focus:shadow-inset focus:outline-none motion-reduce:transition-none" placeholder="Buscar" aria-label="Buscar" aria-describedby="button-addon2" />
                             </div>
 
                             <!-- Icone do Mapa -->
@@ -79,11 +85,11 @@
                                     <option value="SE">Sergipe</option>
                                     <option value="TO">Tocantins</option>
                                 </select>
-                                <select id="cidadeBuscaPC" name="cidadeBuscaPC" class="cidadeBusca block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-secondary-500 appearance-none focus:outline-none focus:ring-0 focus:border-secondary-500 peer">
+                                <select id="cidadeBuscaPC" name="cidadeBuscaPC" class="cidadeBusca block mr-1 py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-secondary-500 appearance-none focus:outline-none focus:ring-0 focus:border-secondary-500 peer">
                                     <option value="">Cidade</option>
                                 </select>
                             </div>
-                            <span class="buscarAnuncioPC cursor-pointer flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-gray-600 [&>svg]:w-5" id="basic-addon2">
+                            <span id="buscarAnuncioPC" class="cursor-pointer flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-gray-600 [&>svg]:w-5" id="basic-addon2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                                 </svg>
@@ -171,7 +177,7 @@
                             <option value="">Cidade</option>
                         </select>
                         <div class="grid justify-items-end mt-4 mb-4">
-                            <span class="buscarAnuncioMobile cursor-pointer flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-gray-600 [&>svg]:w-8" id="basic-addon2">
+                            <span id="buscarAnuncioMobile" class="cursor-pointer flex items-center whitespace-nowrap rounded px-3 py-1.5 text-center text-base font-normal text-gray-600 [&>svg]:w-8" id="basic-addon2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
                                 </svg>
@@ -200,13 +206,23 @@
 
 
     <div class="bg-white">
-        <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <div class="mx-auto max-w-2xl px-4 py-3 sm:px-6 sm:py-12 lg:max-w-7xl lg:px-8">
+            <span class="flex mb-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-blue-600 rounded-full me-1.5 flex-shrink-0"></span>Tipo do Anuncio</span>
+            <button id="tipoTodos" name="tipoTodos" codigo="0" type="button" class="buscarTipo mb-3 bg-primary-accent-200 inline-block rounded-full bg-primary-100 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:bg-primary-accent-200 focus:bg-primary-accent-200 focus:outline-none focus:ring-0 active:bg-primary-accent-200 motion-reduce:transition-none" data-twe-ripple-init>
+                Todos
+            </button>
+            @foreach ($tipo as $reg)
+            <button id="tipo{{ $reg->id }}" name="tipo{{ $reg->id }}" codigo="{{ $reg->id }}" type="button" class="buscarTipo mb-3 inline-block rounded-full bg-primary-100 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-primary-700 transition duration-150 ease-in-out hover:bg-primary-accent-200 focus:bg-primary-accent-200 focus:outline-none focus:ring-0 active:bg-primary-accent-200 motion-reduce:transition-none" data-twe-ripple-init>
+                {{ $reg->descricao }}
+            </button>
+            @endforeach
 
+
+            <span class="flex my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-purple-500 rounded-full me-1.5 flex-shrink-0"></span>Classificados</span>
             <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
 
-
                 @foreach ($lista as $reg)
-                <div class="group relative border-solid border rounded border-gray-200 shadow-md hover:shadow-xl">
+                <div codigo="{{ $reg->id }}" class="cardProduto group relative border-solid border rounded border-gray-200 shadow-md hover:shadow-xl">
                     <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t bg-gray-200 lg:aspect-none group-hover:opacity-85 lg:h-80">
                         <img src="{{ url('arquivos/imagens/'.$reg->imagem) }}" alt="Front of men&#039;s Basic Tee in black." class="h-full w-full object-cover object-center lg:h-full lg:w-full">
                     </div>
@@ -219,7 +235,7 @@
                                 </a>
                             </h3>
                         </div>
-                        <p class="text-sm font-medium text-gray-900 p-1">R$ {{ campoVazio($reg->valor) }}</p>
+                        <p class="text-sm font-medium text-gray-900 p-1">R$ {{ valorVazio($reg->valor) }}</p>
                     </div>
                     <p class="mt-1 text-justify text-sm text-gray-500 p-1">{{ limiteDesc($reg->descricao) }}</p>
                 </div>
@@ -230,17 +246,73 @@
         </div>
     </div>
 
+    <!-- PopUp de Loading -->
+    <div id="popupCarregando" data-te-modal-init data-te-backdrop="static" data-te-keyboard="false" tabindex="-1" aria-modal="true" role="dialog" class="fixed left-0 top-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" aria-labelledby="popupCarregandoTitle">
+        <div data-te-modal-dialog-ref class="pointer-events-none relative flex flex-col justify-center items-center h-full">
+            <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-danger motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extra Large Modal -->
+    <button type="button" id="btnProduto" data-modal-target="modalProduto" data-modal-toggle="modalProduto"></button>
+    <div id="modalProduto" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative w-full max-w-7xl max-h-full ">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow-2xl border-4 rounded-lg">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                    <h3 id="tituloProduto" class="text-xl font-medium text-gray-900"></h3>
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="modalProduto">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5">
+                    <div class="mb-8">
+                        <span class="flex my-3 items-center text-lg font-medium text-gray-900 me-3"><span class="flex w-3 h-3 me-3 bg-red-500 rounded-full"></span>Valor do produto</span>
+                        <p>R$<span id="valorProduto"></span></p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="flex my-3 items-center text-lg font-medium text-gray-900 me-3"><span class="flex w-3 h-3 me-3 bg-yellow-300 rounded-full"></span>Forma de pagamento</span>
+                        <p id="formaPagamento"></p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="flex my-3 items-center text-lg font-medium text-gray-900 me-3"><span class="flex w-3 h-3 me-3 bg-green-500 rounded-full"></span>Contato</span>
+                        <p><span class="font-bold">Nome empresa:</span> <span id="nomeEmpresa"></span></p>
+                        <p class="hidden"><span class="font-bold">Email:</span> <span id="email"></span></p>
+                        <p class="hidden"><span class="font-bold">Celular:</span> <span id="celular"></span></p>
+                        <p class="hidden"><span class="font-bold">Telefone:</span> <span id="telefone"></span></p>
+                    </div>
+                    <div class="mb-8">
+                        <span class="flex my-3 items-center text-lg font-medium text-gray-900 me-3"><span class="flex w-3 h-3 me-3 bg-indigo-500 rounded-full"></span>Descrição do produto</span>
+                        <p id="descricaoProduto"></p>
+                    </div>
+                    <div class="container mx-auto">
+                        <div id="conteudoImg" class="-m-1 flex flex-wrap md:-m-2">
+                        </div>
+                    </div>
+                    <div id="videoProduto" class="flex justify-center mt-10"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
 
 <?php
-function campoVazio($valor)
+function valorVazio($valor)
 {
     if ($valor != null && $valor != "") {
         return $valor;
     } else {
-        return "-";
+        return "0.00";
     }
 }
 
