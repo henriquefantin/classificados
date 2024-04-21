@@ -64,7 +64,7 @@
                                     <label for="nivel" class="block text-sm font-medium leading-6 text-gray-900">Nível</label>
                                     <select id="nivel" name="nivel" class="obrigatorio block w-full rounded-md py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
                                         <option value="">-- Selecione --</option>
-                                        <option value="1">Basico</option>
+                                        <option value="1">Básico</option>
                                         <option value="2">Médio</option>
                                         <option value="3">Alto</option>
                                     </select>

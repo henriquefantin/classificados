@@ -1,8 +1,15 @@
 var urlRedirecionar = "{{ route('classificados') }}";
 var valorEstado = "";
 var valorCidade = "";
-var tipoAnuncio = "";
+var map;
 $(document).ready(function () {
+  // Executa a função para definir a visibilidade do menu principal no carregamento da página
+  toggleMenuPrincipalVisibility();
+  // Adiciona um listener de resize para atualizar a visibilidade do menu principal quando a janela for redimensionada
+  $(window).on('resize', function () {
+    toggleMenuPrincipalVisibility();
+  });
+
   $("#divSanduicheNavbar").click(function () {
     if ($("#navbarConteudo").is(":hidden")) {
       $("#navbarConteudo").fadeIn(200);
@@ -18,41 +25,57 @@ $(document).ready(function () {
     if ($("#cidadeBuscaPC").val() != "") {
       cidade = $("#cidadeBuscaPC option:selected").text();
     }
-    buscarAnuncioDetalhe($("#descBuscaPC").val(), $("#estadoBuscaPC").val(), cidade, tipoAnuncio);
+    buscarAnuncioDetalhe($("#descBuscaPC").val(), $("#estadoBuscaPC").val(), cidade);
   });
   $("#buscarAnuncioMobile").click(function () {
     let cidade = "";
     if ($("#cidadeBuscaMobile").val() != "") {
       cidade = $("#cidadeBuscaMobile option:selected").text();
     }
-    buscarAnuncioDetalhe($("#descBuscaMobile").val(), $("#estadoBuscaMobile").val(), cidade, tipoAnuncio);
+    buscarAnuncioDetalhe($("#descBuscaMobile").val(), $("#estadoBuscaMobile").val(), cidade);
   });
-  $(".buscarTipo").each(function () {
-    $(this).removeClass("bg-primary-accent-200");
-    if ($(this).attr("codigo") == tipoAnuncio) {
-      $(this).addClass("bg-primary-accent-200");
-    }
-  });
-  $(".buscarTipo").click(function () {
-    let tipoAnuncioRedirecionar = $(this).attr("codigo");
-    let url = window.location.href.split("tipo");
-    let parametros = url[1].split("/");
-    parametros[1] = tipoAnuncioRedirecionar;
-    window.location.href = url[0] + "tipo" + parametros.join("/");
-  });
+  // $(".buscarTipo").each(function () {
+  //   $(this).removeClass("bg-primary-accent-200");
+  //   if ($(this).attr("codigo") == tipoAnuncio) {
+  //     $(this).addClass("bg-primary-accent-200");
+  //   }
+  // });
+  // $(".buscarTipo").click(function () {
+  //   let tipoAnuncioRedirecionar = $(this).attr("codigo");
+  //   let url = window.location.href.split("tipo");
+  //   let parametros = url[1].split("/");
+  //   parametros[1] = tipoAnuncioRedirecionar;
+  //   window.location.href = url[0] + "tipo" + parametros.join("/");
+  // });
   $(".cardProduto").click(function () {
     carregarProduto($(this).attr("codigo"));
   });
   atualizarBusca();
 });
 
-function atualizarBusca() {
-  if ($("#dadoEstado").val() != "") {
-    $(".estadoBusca").val(valorEstado).change();
+// Adiciona a classe hidden ao menu principal se o menu mobile estiver visível
+function toggleMenuPrincipalVisibility() {
+  if ($('#mobile-menu').is(':visible')) {
+    $("#menuPrincipal").addClass("hidden");
+  } else {
+    $("#menuPrincipal").removeClass("hidden");
   }
 }
 
-function buscarAnuncioDetalhe(descricao, estado, cidade, tipo) {
+var param = "";
+function atualizarBusca() {
+  let url = window.location.href;
+  if (url.indexOf("estado") !== -1) {
+    param = window.location.href.split("estado")[1].replace("/", "");
+  } else if (url.indexOf("busca") !== -1) {
+    param = window.location.href.split("busca")[1].split("/")[2];
+  }
+  if (param != "") {
+    $(".estadoBusca").val(param).change();
+  }
+}
+
+function buscarAnuncioDetalhe(descricao, estado, cidade) {
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -66,7 +89,7 @@ function buscarAnuncioDetalhe(descricao, estado, cidade, tipo) {
       "descricao": descricao,
       "estado": estado,
       "cidade": cidade,
-      "tipo": tipo,
+      // "tipo": tipo,
       "random": Math.random()
     },
     success: function (response) {
@@ -114,6 +137,7 @@ function carregarProduto(codProduto) {
           }
           if (dadosLista.celular != "" && dadosLista.celular != null) {
             $("#celular").text(dadosLista.celular).parent().fadeIn(0);
+            $("#celular").attr("href",chamarWhatsApp(dadosLista.celular));
           } else {
             $("#celular").text("").parent().fadeOut(0);
           }
@@ -128,6 +152,27 @@ function carregarProduto(codProduto) {
             valor = dadosLista.valor;
           }
           $("#valorProduto").text(valor);
+
+          let cep = dadosLista.cep.replace(/\D/g, '');
+          let validacep = /^[0-9]{8}$/;
+          if (validacep.test(cep)) {
+            $.ajax({
+              url: "https://cep.awesomeapi.com.br/json/" + cep,
+              type: "GET",
+              cache: false,
+              dataType: "json",
+              beforeSend: function () {
+                modal.classList.remove('hidden');
+              },
+              error: function () {
+                modal.classList.add('hidden');
+              },
+              success: function (dados) {
+                modal.classList.add('hidden');
+                initMap(parseFloat(dados.lat), parseFloat(dados.lng));
+              }
+            });
+          }
         }
 
         $("#conteudoImg").empty();
@@ -136,19 +181,13 @@ function carregarProduto(codProduto) {
           let dadosImgs = response.imagens;
           let conteudoImgs = "";
           for (let i = 0; i < dadosImgs.length; i++) {
-            conteudoImgs += '<div class="flex w-1/2 flex-wrap abrirImagem">'
+            conteudoImgs += '<div class="flex w-auto sm:w-1/2 lg:w-1/3 2xl:w-1/3 flex-wrap abrirImagem">'
               + '<div class="w-full p-1 md:p-2 hover:scale-150">'
               + '<img alt="gallery" class="block h-full w-full rounded-lg object-cover object-center" src="' + dadosImgs[i] + '" />'
               + '</div>'
               + '</div>';
           }
           $("#conteudoImg").append(conteudoImgs);
-          $(".abrirImagem").click(function () {
-            // Obtém o URL da imagem clicada
-            let imageUrl = $(this).children().children().attr("src");
-            // Abre a imagem em uma nova guia
-            window.open(imageUrl);
-          });
         }
 
         if (response.video) {
@@ -156,6 +195,41 @@ function carregarProduto(codProduto) {
         }
       }
     }
+  });
+}
+
+function chamarWhatsApp(numero) {
+  return "https://api.whatsapp.com/send?1=pt_BR&phone=55"+ numero.replace(/\D/g, '');
+}
+
+async function initMap(latitude, long) {
+  let position = {
+    lat: latitude,
+    lng: long
+  };
+
+  // The location of Uluru
+  // Request needed libraries.
+  //@ts-ignore
+  let {
+    Map
+  } = await google.maps.importLibrary("maps");
+  let {
+    AdvancedMarkerView
+  } = await google.maps.importLibrary("marker");
+
+  // The map, centered at Uluru
+  map = new Map(document.getElementById("map"), {
+    zoom: 13,
+    center: position,
+    mapId: "localEmpresa",
+  });
+
+  // The marker, positioned at Uluru
+  let marker = new AdvancedMarkerView({
+    map: map,
+    position: position,
+    title: "marcador",
   });
 }
 

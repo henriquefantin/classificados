@@ -27,33 +27,33 @@
             @csrf
 
             <!-- Dados Empresa -->
-            <h3 class="mb-5 font-bold">Dados da Empresa</h3>
-            <div>
+            <span class="flex my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-purple-500 rounded-full me-1.5 flex-shrink-0"></span>Dados da Empresa</span>
+            <div class="mt-4">
                 <x-label for="nomeEmpresa" :value="__('Nome Empresa')" />
                 <x-input id="nomeEmpresa" class="block mt-1 w-full" type="text" name="nomeEmpresa" required autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="cnpj" :value="__('CNPJ')" />
                 <x-input id="cnpj" class="block mt-1 w-full" type="text" name="cnpj" required autofocus />
                 <p class="mt-2 text-sm text-red-600 oculto">CNPJ inválido!</p>
             </div>
             <div class="mt-4">
-                <x-label for="emailEmpresa" :value="__('Email Empresa')" />
+                <x-label for="emailEmpresa" :value="__('Email de Contato')" />
                 <x-input id="emailEmpresa" class="block mt-1 w-full" type="email" name="emailEmpresa" :value="old('email')" required />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="telefone" :value="__('Telefone')" />
                 <x-input id="telefone" class="phoneMask block mt-1 w-full" type="text" name="telefone" autofocus />
             </div>
-            <div>
-                <x-label for="celular" :value="__('Celular')" />
+            <div class="mt-4">
+                <x-label for="celular" :value="__('WhatsApp')" />
                 <x-input id="celular" class="phoneMask block mt-1 w-full" type="text" name="celular" autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="cep" :value="__('CEP')" />
                 <x-input id="cep" class="block mt-1 w-full" type="text" name="cep" required autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="estado" :value="__('Estado')" />
                 <select id="estado" class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block mt-1 w-full" name="estado" required autofocus>
                     <option value="">Selecione</option>
@@ -86,39 +86,39 @@
                     <option value="TO">Tocantins</option>
                 </select>
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="cidade" :value="__('Cidade')" />
                 <x-input id="cidade" class="block mt-1 w-full" type="text" name="cidade" required autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="bairro" :value="__('Bairro')" />
                 <x-input id="bairro" class="block mt-1 w-full" type="text" name="bairro" required autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="rua" :value="__('Rua')" />
                 <x-input id="rua" class="block mt-1 w-full" type="text" name="rua" required autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="numero" :value="__('Número')" />
                 <x-input id="numero" class="block mt-1 w-full" type="text" name="numero" required autofocus />
             </div>
-            <div>
+            <div class="mt-4">
                 <x-label for="complemento" :value="__('Complemento')" />
                 <x-input id="complemento" class="block mt-1 w-full" type="text" name="complemento" autofocus />
             </div>
 
 
             <!-- Dados Login -->
-            <h3 class="mt-10 mb-5 font-bold">Dados de Acesso</h3>
+            <span class="flex mt-20 my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-purple-500 rounded-full me-1.5 flex-shrink-0"></span>Dados de Acesso</span>
             <!-- Name -->
-            <div>
+            <div class="mt-4">
                 <x-label for="name" :value="__('Name')" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required />
             </div>
 
             <!-- Email Address -->
             <div class="mt-4">
-                <x-label for="email" :value="__('Email')" />
+                <x-label for="email" :value="__('Email de Acesso')" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
             </div>
 

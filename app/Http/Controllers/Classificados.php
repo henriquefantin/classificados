@@ -13,19 +13,16 @@ class Classificados extends Controller
         $descricao = $req->input("descricao");
         $estado = $req->input("estado");
         $cidade = $req->input("cidade");
-        $tipoAnuncio = $req->input("tipoAnuncio");
 
-        if ($descricao != "" && $estado == "") {
-            $urlRedirecionar = route("classificados.busca", ["tipoA" => $tipoAnuncio, "busca" => $descricao]);
-        } else if ($estado != "" && $descricao == "") {
-            $urlRedirecionar = route("classificados.estado", ["tipoA" => $tipoAnuncio, "estado" => $estado, "cidade" => $cidade]);
+        if ($estado != "" && $descricao == "") {
+            $urlRedirecionar = route("classificados.estado", ["estado" => $estado, "cidade" => $cidade]);
         } else {
-            $urlRedirecionar = route("classificados", ["tipoA" => $tipoAnuncio, "busca" => $descricao, "estado" => $estado, "cidade" => $cidade]);
+            $urlRedirecionar = route("classificados", ["busca" => $descricao, "estado" => $estado, "cidade" => $cidade]);
         }
         return response()->json(['url' => $urlRedirecionar]);
     }
 
-    function listarClassificados(Request $req, $tipoAnuncio = 0, $busca = "", $estado = "", $cidade = "")
+    function listarClassificados(Request $req, $busca = "", $estado = "", $cidade = "")
     {
         $retornoBusca = "";
         $retornoEstado = "";
@@ -47,7 +44,7 @@ class Classificados extends Controller
         $sql .= "   ORDER BY AP.created_at ";
         $sql .= "   LIMIT 1 ";
         $sql .= " ) AS imagem, ";
-        $sql .= " E.nome AS nomeEmpresa, E.email, E.telefone, E.celular ";
+        $sql .= " E.nome AS nomeEmpresa, E.email, E.telefone, E.celular, E.cep ";
         $sql .= " FROM produtos P ";
         $sql .= "   JOIN tipo_anuncio T ON T.id = P.codTipoAnuncio ";
         $sql .= "   JOIN forma_pagamento F ON F.id = P.codFormaPagamento ";
@@ -60,17 +57,17 @@ class Classificados extends Controller
             $sql .= " AND P.TITULO LIKE '%" . $busca . "%'";
             $retornoBusca = $busca;
         }
-        if (!is_null($estado) && $estado !== '' && ($tipo == "" || $tipo == "estado")) {
+        if (!is_null($estado) && $estado !== '') {
             $sql .= " AND E.estado = '" . $estado . "'";
             $retornoEstado = $estado;
         }
-        if (!is_null($cidade) && $cidade !== '' && ($tipo == "" || $tipo == "estado")) {
+        if (!is_null($cidade) && $cidade !== '') {
             $sql .= " AND E.cidade LIKE '%" . $cidade . "%'";
             $retornoCidade = $cidade;
         }
-        if ($tipoAnuncio != 0) {
-            $sql .= " AND T.id = " . $tipoAnuncio;
-        }
+        // if ($tipoAnuncio != 0) {
+        //     $sql .= " AND T.id = " . $tipoAnuncio;
+        // }
         $sql .= " ORDER BY P.created_at DESC ";
         $rsLista = DB::select($sql);
 
@@ -109,7 +106,7 @@ class Classificados extends Controller
 
             return response()->json(['lista' => $rsLista, 'imagens' => $arrayImagens, 'video' => $video]);
         } else {
-            return view('welcome', ['lista' => $rsLista, 'busca' => $retornoBusca, 'estado' => $retornoEstado, 'cidade' => $retornoCidade, 'tipo' => $rsTipo, 'tipoAnuncio' => $tipoAnuncio]);
+            return view('welcome', ['lista' => $rsLista, 'busca' => $retornoBusca, 'estado' => $retornoEstado, 'cidade' => $retornoCidade, 'tipo' => $rsTipo]);
         }
     }
 }

@@ -93,4 +93,44 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
+
+    public function atualizarMeusDados(Request $req)
+    {
+        $req->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+        dd($req->nomeEmpresa);
+
+        $empresa = Empresa::find(Auth::user()->codEmpresa);
+        $empresa->nome = $req->nomeEmpresa;
+        $empresa->cnpj = $req->cnpj;
+        $empresa->email = $req->emailEmpresa;
+        $empresa->telefone = $req->telefone;
+        $empresa->celular = $req->celular;
+        $empresa->cep = $req->cep;
+        $empresa->estado = $req->estado;
+        $empresa->cidade = $req->cidade;
+        $empresa->bairro = $req->bairro;
+        $empresa->rua = $req->rua;
+        $empresa->numero = $req->numero;
+        $empresa->complemento = $req->complemento;
+        $empresa->save();
+
+        $user = User::find(Auth::user()->id);
+        $user->name = $req->name;
+        $user->email = $req->email;
+        
+        if ($req->password != "" && $req->password_confirmation != "") {
+            $user->password = Hash::make($req->password);
+        }
+        $user->save();
+
+        // event(new Registered($user));
+
+        // Auth::login($user);
+
+        // return redirect(RouteServiceProvider::HOME);
+    }
 }

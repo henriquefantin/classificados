@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Empresa;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 
 class Dashboard extends Controller
 {
@@ -27,7 +33,8 @@ class Dashboard extends Controller
     }
 
     //Views - Lista
-    function listarAnuncio($tipo = "A") {
+    function listarAnuncio($tipo = "A")
+    {
         $sql  = " SELECT P.id, P.titulo, T.descricao AS tipo, F.descricao AS pagamento, P.valor, ";
         $sql .= " ( ";
         $sql .= "   SELECT AP.arquivo ";
@@ -46,15 +53,16 @@ class Dashboard extends Controller
             $sql .= " WHERE P.dataFim IS NOT NULL ";
         }
         if (Auth::user()->tipo == 1) {
-            $sql .= " AND P.codEmpresa = ". Auth::user()->codEmpresa;
+            $sql .= " AND P.codEmpresa = " . Auth::user()->codEmpresa;
         }
         $sql .= " ORDER BY P.created_at DESC ";
         $rsLista = DB::select($sql);
 
         return view('listas.anuncio', ['lista' => $rsLista, 'tipo' => $tipo]);
     }
-    
-    function listarTipoAnuncio($tipo = "A") {
+
+    function listarTipoAnuncio($tipo = "A")
+    {
         $sql  = " SELECT id, descricao ";
         $sql .= " FROM tipo_anuncio ";
         if ($tipo == "A") {
@@ -68,7 +76,8 @@ class Dashboard extends Controller
         return view('listas.tipoAnuncio', ['lista' => $rsLista, 'tipo' => $tipo]);
     }
 
-    function listarFormaPagamento($tipo = "A") {
+    function listarFormaPagamento($tipo = "A")
+    {
         $sql  = " SELECT id, descricao, limiteParcelas ";
         $sql .= " FROM forma_pagamento P ";
         if ($tipo == "A") {
@@ -82,7 +91,8 @@ class Dashboard extends Controller
         return view('listas.formaPagamento', ['lista' => $rsLista, 'tipo' => $tipo]);
     }
 
-    function listarClientes() {
+    function listarClientes()
+    {
         $sql  = " SELECT id, nome, cnpj, IFNULL(nivelCliente,'-') AS nivelCliente, ";
         $sql .= " IFNULL((SELECT 'N' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'S') AS ativo ";
         $sql .= " FROM empresa E ";
@@ -144,33 +154,33 @@ class Dashboard extends Controller
 
         $sql  = " SELECT id, titulo, descricao, codFormaPagamento, codTipoAnuncio, valor ";
         $sql .= " FROM produtos ";
-        $sql .= " WHERE id = ".$id;
+        $sql .= " WHERE id = " . $id;
         $sql .= " LIMIT 1 ";
         $rsProduto = DB::select($sql);
 
         $sql  = " SELECT arquivo ";
         $sql .= " FROM arquivo_produto ";
-        $sql .= " WHERE codProduto = ".$id;
+        $sql .= " WHERE codProduto = " . $id;
         $sql .= " AND tipo = 'I' ";
         $rsImagens = DB::select($sql);
 
         $arrayImagens = [];
         $contImg = 0;
         foreach ($rsImagens as $reg) {
-            $arrayImagens[$contImg] = url('arquivos/imagens/'.$reg->arquivo);
+            $arrayImagens[$contImg] = url('arquivos/imagens/' . $reg->arquivo);
             $contImg++;
         }
 
         $sql  = " SELECT arquivo ";
         $sql .= " FROM arquivo_produto ";
-        $sql .= " WHERE codProduto = ".$id;
+        $sql .= " WHERE codProduto = " . $id;
         $sql .= " AND tipo = 'V' ";
         $rsVideo = DB::select($sql);
 
         $arrayVideos = [];
         $contVid = 0;
         foreach ($rsVideo as $reg) {
-            $arrayVideos[$contVid] = url('arquivos/videos/'.$reg->arquivo);
+            $arrayVideos[$contVid] = url('arquivos/videos/' . $reg->arquivo);
             $contVid++;
         }
 
@@ -189,7 +199,7 @@ class Dashboard extends Controller
     {
         $sql  = " SELECT id, descricao ";
         $sql .= " FROM tipo_anuncio ";
-        $sql .= " WHERE id = ".$id;
+        $sql .= " WHERE id = " . $id;
         $sql .= " LIMIT 1 ";
         $rsTipoAnuncio = DB::select($sql);
 
@@ -201,7 +211,7 @@ class Dashboard extends Controller
     {
         $sql  = " SELECT id, descricao, limiteParcelas ";
         $sql .= " FROM forma_pagamento ";
-        $sql .= " WHERE id = ".$id;
+        $sql .= " WHERE id = " . $id;
         $sql .= " LIMIT 1 ";
         $rsFormaPag = DB::select($sql);
 
@@ -214,12 +224,28 @@ class Dashboard extends Controller
         $sql  = " SELECT nome, cnpj, IFNULL(nivelCliente,'') AS nivelCliente, ";
         $sql .= " IFNULL((SELECT 'N' FROM users U WHERE U.codEmpresa = E.id AND (U.ativo = 'N' OR U.ativo IS NULL) LIMIT 1),'S') AS ativo ";
         $sql .= " FROM empresa E ";
-        $sql .= " WHERE E.id = ".$id;
+        $sql .= " WHERE E.id = " . $id;
         $sql .= " ORDER BY nome ";
         $rsEmpresa = DB::select($sql);
 
         $actionForm = route('atualizarCliente', ['id' => $id]);
         return view('cadastros.cliente', ['actionForm' => $actionForm, 'empresa' => $rsEmpresa[0]]);
+    }
+
+    function editarMeusDados()
+    {
+        $sql  = " SELECT * ";
+        $sql .= " FROM empresa ";
+        $sql .= " WHERE id = " . Auth::user()->codEmpresa;
+        $sql .= " LIMIT 1 ";
+        $rsEmpresa = DB::select($sql);
+
+        $sql  = " SELECT * ";
+        $sql .= " FROM users ";
+        $sql .= " WHERE id = " . Auth::user()->id;
+        $sql .= " LIMIT 1 ";
+        $rsUser = DB::select($sql);
+        return view('cadastros.meusDados', ['empresa' => $rsEmpresa[0], 'usuario' => $rsUser[0]]);
     }
 
     //Insert
@@ -277,15 +303,15 @@ class Dashboard extends Controller
                 $msg = "É necessário incluir pelo menos uma imagem do produto.";
                 $erro = true;
             }
-    
+
             if (!$erro) {
                 try {
                     $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio,valor) VALUES (";
                     $sql .= $this->validarCampo($titulo, 'S');
-                    $sql .= ",".$this->validarCampo($descricao, 'S');
-                    $sql .= ",".$this->validarCampo($codFormaPagamento, 'N');
-                    $sql .= ",".$this->validarCampo($codTipoAnuncio, 'N');
-                    $sql .= ",".$this->validarCampo($valor, 'S');
+                    $sql .= "," . $this->validarCampo($descricao, 'S');
+                    $sql .= "," . $this->validarCampo($codFormaPagamento, 'N');
+                    $sql .= "," . $this->validarCampo($codTipoAnuncio, 'N');
+                    $sql .= "," . $this->validarCampo($valor, 'S');
                     $sql .= ")";
                     $rsFormaPag = DB::statement($sql);
                     if ($rsFormaPag) {
@@ -295,21 +321,21 @@ class Dashboard extends Controller
                         $msg = "Erro ao inserir anuncio.";
                         $erro = true;
                     }
-        
+
                     if (!$erro && $nomeVideo != "") {
                         $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
                         $sql .= $this->validarCampo($idProduto, 'N');
-                        $sql .= ",".$this->validarCampo($nomeVideo, 'S');
+                        $sql .= "," . $this->validarCampo($nomeVideo, 'S');
                         $sql .= ",'V'";
                         $sql .= ")";
                         DB::statement($sql);
                     }
-        
+
                     if (!$erro && count($arrayImagens) > 0) {
                         for ($x = 0; count($arrayImagens) > $x; $x++) {
                             $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
                             $sql .= $this->validarCampo($idProduto, 'N');
-                            $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
+                            $sql .= "," . $this->validarCampo($arrayImagens[$x], 'S');
                             $sql .= ",'I'";
                             $sql .= ")";
                             DB::statement($sql);
@@ -321,7 +347,7 @@ class Dashboard extends Controller
                 }
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -338,7 +364,7 @@ class Dashboard extends Controller
         $msg = "";
         $erro = false;
         $descricao = $req->input('descricao');
-        
+
         if ($descricao == "") {
             $msg = "A descrição do tipo do anuncio é obrigatória.";
             $erro = true;
@@ -362,7 +388,7 @@ class Dashboard extends Controller
                 $erro = true;
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -381,7 +407,7 @@ class Dashboard extends Controller
         $erro = false;
         $descricao = $req->input('descricao');
         $parcelas = $req->input('parcelas');
-        
+
         if ($descricao == "") {
             $msg = "A descrição da forma de pagamento é obrigatória.";
             $erro = true;
@@ -394,7 +420,7 @@ class Dashboard extends Controller
             try {
                 $sql  = "INSERT INTO forma_pagamento (descricao,limiteParcelas) VALUES (";
                 $sql .= $this->validarCampo($descricao, 'S');
-                $sql .= ",".$this->validarCampo($parcelas, 'N');
+                $sql .= "," . $this->validarCampo($parcelas, 'N');
                 $sql .= ")";
                 $rsFormaPag = DB::statement($sql);
                 if ($rsFormaPag) {
@@ -409,7 +435,7 @@ class Dashboard extends Controller
                 $erro = true;
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -473,12 +499,12 @@ class Dashboard extends Controller
             if (!$erro) {
                 try {
                     $sql  = " UPDATE produtos SET ";
-                    $sql .= " titulo = ".$this->validarCampo($titulo, 'S');
-                    $sql .= " ,descricao = ".$this->validarCampo($descricao, 'S');
-                    $sql .= " ,codFormaPagamento = ".$this->validarCampo($codFormaPagamento, 'N');
-                    $sql .= " ,codTipoAnuncio = ".$this->validarCampo($codTipoAnuncio, 'N');
-                    $sql .= " ,valor = ".$this->validarCampo($valor, 'S');
-                    $sql .= " WHERE id = ".$id;
+                    $sql .= " titulo = " . $this->validarCampo($titulo, 'S');
+                    $sql .= " ,descricao = " . $this->validarCampo($descricao, 'S');
+                    $sql .= " ,codFormaPagamento = " . $this->validarCampo($codFormaPagamento, 'N');
+                    $sql .= " ,codTipoAnuncio = " . $this->validarCampo($codTipoAnuncio, 'N');
+                    $sql .= " ,valor = " . $this->validarCampo($valor, 'S');
+                    $sql .= " WHERE id = " . $id;
                     $rsFormaPag = DB::statement($sql);
                     if ($rsFormaPag) {
                         $msg = "Anuncio atualizado com sucesso.";
@@ -486,21 +512,21 @@ class Dashboard extends Controller
                         $msg = "Erro ao atualizar anuncio.";
                         $erro = true;
                     }
-    
+
                     if (!$erro && $nomeVideo != "") {
                         $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
                         $sql .= $this->validarCampo($id, 'N');
-                        $sql .= ",".$this->validarCampo($nomeVideo, 'S');
+                        $sql .= "," . $this->validarCampo($nomeVideo, 'S');
                         $sql .= ",'V'";
                         $sql .= ")";
                         DB::statement($sql);
                     }
-    
+
                     if (!$erro && count($arrayImagens) > 0) {
                         for ($x = 0; count($arrayImagens) > $x; $x++) {
                             $sql  = "INSERT INTO arquivo_produto (codProduto,arquivo,tipo) VALUES (";
                             $sql .= $this->validarCampo($id, 'N');
-                            $sql .= ",".$this->validarCampo($arrayImagens[$x], 'S');
+                            $sql .= "," . $this->validarCampo($arrayImagens[$x], 'S');
                             $sql .= ",'I'";
                             $sql .= ")";
                             DB::statement($sql);
@@ -512,7 +538,7 @@ class Dashboard extends Controller
                 }
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -529,7 +555,7 @@ class Dashboard extends Controller
         $msg = "";
         $erro = false;
         $descricao = $req->input('descricao');
-        
+
         if ($descricao == "") {
             $msg = "A descrição do tipo do anuncio é obrigatória.";
             $erro = true;
@@ -538,8 +564,8 @@ class Dashboard extends Controller
         if (!$erro) {
             try {
                 $sql  = " UPDATE tipo_anuncio SET ";
-                $sql .= " descricao = ".$this->validarCampo($descricao, 'S');
-                $sql .= " WHERE id = ".$id;
+                $sql .= " descricao = " . $this->validarCampo($descricao, 'S');
+                $sql .= " WHERE id = " . $id;
                 $rsTipoAnuncio = DB::statement($sql);
                 if ($rsTipoAnuncio) {
                     $msg = "Tipo do anuncio atualizado com sucesso.";
@@ -552,7 +578,7 @@ class Dashboard extends Controller
                 $erro = true;
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -570,7 +596,7 @@ class Dashboard extends Controller
         $erro = false;
         $descricao = $req->input('descricao');
         $parcelas = $req->input('parcelas');
-        
+
         if ($descricao == "") {
             $msg = "A descrição da forma de pagamento é obrigatória.";
             $erro = true;
@@ -582,9 +608,9 @@ class Dashboard extends Controller
         if (!$erro) {
             try {
                 $sql  = " UPDATE forma_pagamento SET";
-                $sql .= " descricao = ".$this->validarCampo($descricao, 'S');
-                $sql .= " ,limiteParcelas = ".$this->validarCampo($parcelas, 'N');
-                $sql .= " WHERE id = ".$id;
+                $sql .= " descricao = " . $this->validarCampo($descricao, 'S');
+                $sql .= " ,limiteParcelas = " . $this->validarCampo($parcelas, 'N');
+                $sql .= " WHERE id = " . $id;
                 $rsFormaPag = DB::statement($sql);
                 if ($rsFormaPag) {
                     $msg = "Forma de pagamento atualizada com sucesso.";
@@ -597,7 +623,7 @@ class Dashboard extends Controller
                 $erro = true;
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -607,7 +633,7 @@ class Dashboard extends Controller
         }
     }
 
-    function atualizarCliente(Request $req, $id) 
+    function atualizarCliente(Request $req, $id)
     {
         DB::beginTransaction();
 
@@ -616,7 +642,7 @@ class Dashboard extends Controller
         $nivel = $req->input('nivel');
         $ativo = $req->input('ativo');
         // dd($ativo);
-        
+
         if ($nivel == "") {
             $msg = "O nível é obrigatório.";
             $erro = true;
@@ -628,15 +654,15 @@ class Dashboard extends Controller
         if (!$erro) {
             try {
                 $sql  = " UPDATE empresa SET";
-                $sql .= " nivelCliente = ".$this->validarCampo($nivel, 'N');
-                $sql .= " WHERE id = ".$id;
+                $sql .= " nivelCliente = " . $this->validarCampo($nivel, 'N');
+                $sql .= " WHERE id = " . $id;
                 $rsAttEmpresa = DB::statement($sql);
-                
+
                 $sql  = " UPDATE users SET";
-                $sql .= " ativo = ".$this->validarCampo($ativo, 'S');
-                $sql .= " WHERE codEmpresa = ".$id;
+                $sql .= " ativo = " . $this->validarCampo($ativo, 'S');
+                $sql .= " WHERE codEmpresa = " . $id;
                 $rsAttUser = DB::statement($sql);
-                
+
                 if ($rsAttUser && $rsAttEmpresa) {
                     $msg = "Cliente atualizado com sucesso.";
                 } else {
@@ -648,7 +674,7 @@ class Dashboard extends Controller
                 $erro = true;
             }
         }
-    
+
         if ($erro) {
             DB::rollBack();
             return response()->json(["success" => false, "msg" => $msg]);
@@ -656,6 +682,41 @@ class Dashboard extends Controller
             DB::commit();
             return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
+    }
+
+    function atualizarMeusDados(Request $req)
+    {
+        $req->validate([
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $empresa = Empresa::find(Auth::user()->codEmpresa);
+        $empresa->nome = $req->nomeEmpresa;
+        $empresa->cnpj = $req->cnpj;
+        $empresa->email = $req->emailEmpresa;
+        $empresa->telefone = $req->telefone;
+        $empresa->celular = $req->celular;
+        $empresa->cep = $req->cep;
+        $empresa->estado = $req->estado;
+        $empresa->cidade = $req->cidade;
+        $empresa->bairro = $req->bairro;
+        $empresa->rua = $req->rua;
+        $empresa->numero = $req->numero;
+        $empresa->complemento = $req->complemento;
+        $empresa->save();
+
+        $user = User::find(Auth::user()->id);
+        $user->name = $req->name;
+        $user->email = $req->email;
+        
+        if ($req->password != "" && $req->password_confirmation != "") {
+            $user->password = Hash::make($req->password);
+        }
+        $user->save();
+
+        event(new Registered($user));
+        Auth::login($user);
+        return redirect(RouteServiceProvider::HOME);
     }
 
     //Delete
@@ -669,7 +730,7 @@ class Dashboard extends Controller
         try {
             $sql  = " UPDATE produtos SET ";
             $sql .= " dataFim = curdate() ";
-            $sql .= " WHERE id = ".$id;
+            $sql .= " WHERE id = " . $id;
             $rsFormaPag = DB::statement($sql);
             if ($rsFormaPag) {
                 $msg = "Anuncio encerrado com sucesso.";
@@ -701,7 +762,7 @@ class Dashboard extends Controller
         try {
             $sql  = " UPDATE tipo_anuncio SET ";
             $sql .= " dataFim = curdate() ";
-            $sql .= " WHERE id = ".$id;
+            $sql .= " WHERE id = " . $id;
             $rsTipoAnuncio = DB::statement($sql);
             if ($rsTipoAnuncio) {
                 $msg = "Tipo do anuncio encerrado com sucesso.";
@@ -733,7 +794,7 @@ class Dashboard extends Controller
         try {
             $sql  = " UPDATE forma_pagamento SET ";
             $sql .= " dataFim = curdate() ";
-            $sql .= " WHERE id = ".$id;
+            $sql .= " WHERE id = " . $id;
             $rsFormaPag = DB::statement($sql);
             if ($rsFormaPag) {
                 $msg = "Forma de pagamento encerrada com sucesso.";

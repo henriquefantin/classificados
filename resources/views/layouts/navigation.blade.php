@@ -63,14 +63,14 @@
                     </x-slot>
                     <x-slot name="content">
                         <!-- Authentication -->
-                        <x-dropdown-link>
-                            {{ __('Meus Dados') }}
-                        </x-dropdown-link>
+                        <form method="GET" action="{{ route('editarMeusDados') }}">
+                            <x-dropdown-link :href="route('editarMeusDados')" onclick="event.preventDefault(); this.closest('form').submit();">
+                                {{ __('Meus Dados') }}
+                            </x-dropdown-link>
+                        </form>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>

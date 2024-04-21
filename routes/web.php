@@ -17,11 +17,14 @@ use App\Http\Controllers\Classificados;
 
 
 Route::get('/', function () {
-    return redirect('/tipo/0/busca');
+    return redirect('/busca');
+    // return redirect('/tipo/0/busca');
 });
 
-Route::get('/tipo/{tipoA?}/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
-Route::get('/tipo/{tipoA?}/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
+Route::get('/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
+Route::get('/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
+// Route::get('/tipo/{tipoA?}/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
+// Route::get('/tipo/{tipoA?}/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
 Route::post('/redirecionar', [Classificados::class, 'redirecionar'])->name('redirecionar');
 Route::post('/detalheProduto', [Classificados::class, 'listarClassificados'])->name('detalheProduto');
 
@@ -62,6 +65,10 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/encerrar/anuncio/{id}', [Dashboard::class, 'encerrarAnuncio'])->name('encerrarAnuncio');
     Route::get('/encerrar/tipoAnuncio/{id}', [Dashboard::class, 'encerrarTipoAnuncio'])->name('encerrarTipoAnuncio');
     Route::get('/encerrar/formaPagamento/{id}', [Dashboard::class, 'encerrarFormaPagamento'])->name('encerrarFormaPagamento');
+
+    //Meus dados
+    Route::get('editar/meusDados', [Dashboard::class, 'editarMeusDados'])->name('editarMeusDados');
+    Route::post('atualizar/meusDados', [Dashboard::class, 'atualizarMeusDados'])->name('atualizarMeusDados');
 });
 
 require __DIR__.'/auth.php';
