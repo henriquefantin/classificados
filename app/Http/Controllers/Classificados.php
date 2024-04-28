@@ -22,6 +22,24 @@ class Classificados extends Controller
         return response()->json(['url' => $urlRedirecionar]);
     }
 
+    function listarAnunciantes()
+    {
+        $sql  = " SELECT id, nome, email, telefone, celular, estado, ";
+        $sql .= " cidade, bairro, rua, numero, complemento, ";
+        $sql .= " CASE WHEN nivelCliente = 3 THEN 0 ELSE 1 END AS ordem ";
+        $sql .= " FROM empresa E ";
+        $sql .= " WHERE EXISTS ( ";
+        $sql .= "     SELECT 1 ";
+        $sql .= "     FROM users U ";
+        $sql .= "     WHERE U.codEmpresa = E.id ";
+        $sql .= "     AND U.ativo = 'S' ";
+        $sql .= " ) ";
+        $sql .= " ORDER BY ordem ";
+        $rsEmpresa = DB::select($sql);
+
+        return view('anunciantes',['empresa' => $rsEmpresa]);
+    }
+
     function listarClassificados(Request $req, $busca = "", $estado = "", $cidade = "")
     {
         $retornoBusca = "";
@@ -76,7 +94,7 @@ class Classificados extends Controller
         $sql .= " WHERE dataFim IS NULL ";
         $rsTipo = DB::select($sql);
 
-        
+
         if (!is_null($codProduto) && $codProduto != "") {
             $sql  = " SELECT AP.arquivo ";
             $sql .= " FROM arquivo_produto AP ";
@@ -84,11 +102,11 @@ class Classificados extends Controller
             $sql .= " AND AP.tipo = 'I' ";
             $sql .= " ORDER BY AP.created_at ";
             $rsImagens = DB::select($sql);
-            
+
             $arrayImagens = [];
             $contImg = 0;
             foreach ($rsImagens as $reg) {
-                $arrayImagens[$contImg] = url('arquivos/imagens/'.$reg->arquivo);
+                $arrayImagens[$contImg] = url('arquivos/imagens/' . $reg->arquivo);
                 $contImg++;
             }
 
@@ -98,15 +116,48 @@ class Classificados extends Controller
             $sql .= " AND AP.tipo = 'V' ";
             $sql .= " ORDER BY AP.created_at ";
             $rsVideo = DB::select($sql);
-            
+
             $video = "";
             if ($rsVideo) {
-                $video = url('arquivos/videos/'.$rsVideo[0]->arquivo);
+                $video = url('arquivos/videos/' . $rsVideo[0]->arquivo);
             }
 
             return response()->json(['lista' => $rsLista, 'imagens' => $arrayImagens, 'video' => $video]);
         } else {
-            return view('welcome', ['lista' => $rsLista, 'busca' => $retornoBusca, 'estado' => $retornoEstado, 'cidade' => $retornoCidade, 'tipo' => $rsTipo]);
+            return view('produtos', ['lista' => $rsLista, 'busca' => $retornoBusca, 'estado' => $retornoEstado, 'cidade' => $retornoCidade, 'tipo' => $rsTipo]);
         }
+    }
+
+    function verificarLimiteAnuncio()
+    {
+        $retorno = true;
+        $msg = "";
+        $nivelAcesso = 0;
+        $contAnuncioAtivo = 0;
+
+        $sql  = " SELECT nivelCliente ";
+        $sql .= " FROM empresa ";
+        $sql .= " WHERE id = " . Auth::user()->codEmpresa;
+        $sql .= " LIMIT 1 ";
+        $rsEmpresa = DB::select($sql);
+        if ($rsEmpresa) {
+            $nivelAcesso = $rsEmpresa[0]->nivelCliente;
+        }
+
+        $sql  = " SELECT COUNT(*) AS qtdAnuncio ";
+        $sql .= " FROM produtos ";
+        $sql .= " WHERE codEmpresa = " . Auth::user()->codEmpresa;
+        $sql .= " AND dataFim IS NULL ";
+        $rsAnuncioAtivo = DB::select($sql);
+        if ($rsAnuncioAtivo) {
+            $contAnuncioAtivo = $rsAnuncioAtivo[0]->qtdAnuncio;
+        }
+
+        if ($nivelAcesso == 1 && $contAnuncioAtivo >= 15) {
+            $retorno = false;
+            $msg = "O limite de 15 anúncios ativos foi atingido! <br><br>";
+            $msg .= "Caso deseje manter mais anúncios ativos, contrate um novo plano.";
+        }
+        return response()->json(['podeCadastrar' => $retorno, 'msg' => $msg]);
     }
 }

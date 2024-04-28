@@ -21,7 +21,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-                @if (Auth::user()->tipo == 0 || (Auth::user()->tipo == 1 && Auth::user()->ativo == "S"))
+                @if (Auth::user()->tipo == 1 && Auth::user()->ativo == "S")
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('listarAnuncio', ['tipo' => 'A'])" :active="request()->routeIs('listarAnuncio') || request()->routeIs('novoAnuncio')">
                         {{ __('Anuncios') }}

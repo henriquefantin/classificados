@@ -17,16 +17,15 @@ use App\Http\Controllers\Classificados;
 
 
 Route::get('/', function () {
-    return redirect('/busca');
-    // return redirect('/tipo/0/busca');
+    return redirect('/anunciantes');
 });
 
+Route::get('/anunciantes', [Classificados::class, 'listarAnunciantes'])->name('listarAnunciantes');
 Route::get('/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
 Route::get('/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
-// Route::get('/tipo/{tipoA?}/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
-// Route::get('/tipo/{tipoA?}/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
 Route::post('/redirecionar', [Classificados::class, 'redirecionar'])->name('redirecionar');
 Route::post('/detalheProduto', [Classificados::class, 'listarClassificados'])->name('detalheProduto');
+Route::post('/verificarLimiteAnuncio', [Classificados::class, 'verificarLimiteAnuncio'])->name('verificarLimiteAnuncio');
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/dashboard', function() {

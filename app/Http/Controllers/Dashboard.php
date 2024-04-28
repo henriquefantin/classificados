@@ -306,12 +306,13 @@ class Dashboard extends Controller
 
             if (!$erro) {
                 try {
-                    $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio,valor) VALUES (";
+                    $sql  = "INSERT INTO produtos (titulo,descricao,codFormaPagamento,codTipoAnuncio,valor,codEmpresa) VALUES (";
                     $sql .= $this->validarCampo($titulo, 'S');
                     $sql .= "," . $this->validarCampo($descricao, 'S');
                     $sql .= "," . $this->validarCampo($codFormaPagamento, 'N');
                     $sql .= "," . $this->validarCampo($codTipoAnuncio, 'N');
                     $sql .= "," . $this->validarCampo($valor, 'S');
+                    $sql .= "," . $this->validarCampo(Auth::user()->codEmpresa, 'N');
                     $sql .= ")";
                     $rsFormaPag = DB::statement($sql);
                     if ($rsFormaPag) {
