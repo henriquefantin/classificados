@@ -1896,6 +1896,9 @@ input[type="range"]::-ms-fill-lower {
 .h-screen {
   height: 100vh;
 }
+.h-40 {
+  height: 10rem;
+}
 .max-h-80 {
   max-height: 20rem;
 }
@@ -2069,6 +2072,9 @@ input[type="range"]::-ms-fill-lower {
 }
 .w-screen {
   width: 100vw;
+}
+.w-40 {
+  width: 10rem;
 }
 .min-w-0 {
   min-width: 0px;
@@ -2589,6 +2595,9 @@ input[type="range"]::-ms-fill-lower {
   --tw-divide-opacity: 1;
   border-color: rgb(243 244 246 / var(--tw-divide-opacity));
 }
+.self-center {
+  align-self: center;
+}
 .overflow-auto {
   overflow: auto;
 }
@@ -2988,10 +2997,6 @@ input[type="range"]::-ms-fill-lower {
   --tw-bg-opacity: 1;
   background-color: rgb(235 245 255 / var(--tw-bg-opacity));
 }
-.bg-blue-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(28 100 242 / var(--tw-bg-opacity));
-}
 .bg-current {
   background-color: currentColor;
 }
@@ -3365,6 +3370,12 @@ input[type="range"]::-ms-fill-lower {
 }
 .pt-\[6px\] {
   padding-top: 6px;
+}
+.pl-7 {
+  padding-left: 1.75rem;
+}
+.pr-20 {
+  padding-right: 5rem;
 }
 .text-left {
   text-align: left;
@@ -4019,6 +4030,14 @@ input[type="range"]::-ms-fill-lower {
 .selection\:bg-transparent::selection {
   background-color: transparent;
 }
+.placeholder\:text-gray-400::-moz-placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+.placeholder\:text-gray-400::placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity));
+}
 .before\:pointer-events-none::before {
   content: var(--tw-content);
   pointer-events: none;
@@ -4253,10 +4272,6 @@ input[type="range"]::-ms-fill-lower {
   --tw-bg-opacity: 1;
   background-color: rgb(217 228 243 / var(--tw-bg-opacity));
 }
-.hover\:bg-primary-accent-200:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(206 219 238 / var(--tw-bg-opacity));
-}
 .hover\:bg-red-800:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(155 28 28 / var(--tw-bg-opacity));
@@ -4442,10 +4457,6 @@ input[type="range"]::-ms-fill-lower {
 .focus\:bg-primary-accent-100:focus {
   --tw-bg-opacity: 1;
   background-color: rgb(217 228 243 / var(--tw-bg-opacity));
-}
-.focus\:bg-primary-accent-200:focus {
-  --tw-bg-opacity: 1;
-  background-color: rgb(206 219 238 / var(--tw-bg-opacity));
 }
 .focus\:text-\[\#3b71ca\]:focus {
   --tw-text-opacity: 1;

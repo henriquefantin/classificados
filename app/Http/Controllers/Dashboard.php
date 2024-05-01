@@ -697,6 +697,7 @@ class Dashboard extends Controller
         $empresa->email = $req->emailEmpresa;
         $empresa->telefone = $req->telefone;
         $empresa->celular = $req->celular;
+        $empresa->instagram = $req->instagram;
         $empresa->cep = $req->cep;
         $empresa->estado = $req->estado;
         $empresa->cidade = $req->cidade;
@@ -705,6 +706,20 @@ class Dashboard extends Controller
         $empresa->numero = $req->numero;
         $empresa->complemento = $req->complemento;
         $empresa->save();
+
+        //img
+        $nomeImg = "";
+        if ($req->hasFile('imagensUpload')) {
+            $arquivoImg = $req->imagensUpload;
+            $ext = $arquivoImg->extension();
+            $nomeImg = md5($arquivoImg->getClientOriginalName() . strtotime("now")) . "." . $ext;
+            $req->imagensUpload->move(public_path('arquivos/imagens'), $nomeImg);
+
+            $sql  = " UPDATE empresa SET ";
+            $sql .= " arquivo = " . $this->validarCampo($nomeImg, 'S');
+            $sql .= " WHERE id = " . Empresa::find(Auth::user()->codEmpresa)->id;
+            DB::statement($sql);
+        }
 
         $user = User::find(Auth::user()->id);
         $user->name = $req->name;

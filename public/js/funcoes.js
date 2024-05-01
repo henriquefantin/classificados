@@ -25,14 +25,14 @@ $(document).ready(function () {
     if ($("#cidadeBuscaPC").val() != "") {
       cidade = $("#cidadeBuscaPC option:selected").text();
     }
-    buscarAnuncioDetalhe($("#descBuscaPC").val(), $("#estadoBuscaPC").val(), cidade);
+    buscarAnuncioDetalhe($("#descBuscaPC").val(), $("#estadoBuscaPC").val(), cidade, "");
   });
   $("#buscarAnuncioMobile").click(function () {
     let cidade = "";
     if ($("#cidadeBuscaMobile").val() != "") {
       cidade = $("#cidadeBuscaMobile option:selected").text();
     }
-    buscarAnuncioDetalhe($("#descBuscaMobile").val(), $("#estadoBuscaMobile").val(), cidade);
+    buscarAnuncioDetalhe($("#descBuscaMobile").val(), $("#estadoBuscaMobile").val(), cidade, "");
   });
   // $(".buscarTipo").each(function () {
   //   $(this).removeClass("bg-primary-accent-200");
@@ -47,6 +47,9 @@ $(document).ready(function () {
   //   parametros[1] = tipoAnuncioRedirecionar;
   //   window.location.href = url[0] + "tipo" + parametros.join("/");
   // });
+  $(".cardAnunciante").click(function () {
+    buscarAnuncioDetalhe("", "", "", $(this).attr("codigo"));
+  });
   $(".cardProduto").click(function () {
     carregarProduto($(this).attr("codigo"));
   });
@@ -64,18 +67,18 @@ function toggleMenuPrincipalVisibility() {
 
 var param = "";
 function atualizarBusca() {
-  let url = window.location.href;
+  let url = decodeURIComponent(window.location.href);
   if (url.indexOf("estado") !== -1) {
-    param = window.location.href.split("estado")[1].replace("/", "");
+    param = url.split("estado")[1].replace("/","").split("/")[0];
   } else if (url.indexOf("busca") !== -1) {
-    param = window.location.href.split("busca")[1].split("/")[2];
+    param = url.split("busca")[1].split("/")[2];
   }
   if (param != "") {
     $(".estadoBusca").val(param).change();
   }
 }
 
-function buscarAnuncioDetalhe(descricao, estado, cidade) {
+function buscarAnuncioDetalhe(descricao, estado, cidade, codEmpresa) {
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': jQuery('meta[name="csrf-token"]').attr('content')
@@ -86,10 +89,10 @@ function buscarAnuncioDetalhe(descricao, estado, cidade) {
     type: "POST",
     cache: false,
     data: {
+      "codEmpresa": codEmpresa,
       "descricao": descricao,
       "estado": estado,
       "cidade": cidade,
-      // "tipo": tipo,
       "random": Math.random()
     },
     success: function (response) {
@@ -98,6 +101,10 @@ function buscarAnuncioDetalhe(descricao, estado, cidade) {
       }
     }
   });
+}
+
+function carregarAnunciosEmpresa(codEmpresa) {
+
 }
 
 function carregarProduto(codProduto) {
@@ -137,7 +144,7 @@ function carregarProduto(codProduto) {
           }
           if (dadosLista.celular != "" && dadosLista.celular != null) {
             $("#celular").text(dadosLista.celular).parent().fadeIn(0);
-            $("#celular").attr("href",chamarWhatsApp(dadosLista.celular));
+            $("#celular").attr("href", chamarWhatsApp(dadosLista.celular));
           } else {
             $("#celular").text("").parent().fadeOut(0);
           }
@@ -199,7 +206,7 @@ function carregarProduto(codProduto) {
 }
 
 function chamarWhatsApp(numero) {
-  return "https://api.whatsapp.com/send?1=pt_BR&phone=55"+ numero.replace(/\D/g, '');
+  return "https://api.whatsapp.com/send?1=pt_BR&phone=55" + numero.replace(/\D/g, '');
 }
 
 async function initMap(latitude, long) {

@@ -21,6 +21,7 @@ Route::get('/', function () {
 });
 
 Route::get('/anunciantes', [Classificados::class, 'listarAnunciantes'])->name('listarAnunciantes');
+Route::get('/empresa/{empresa?}/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.empresa');
 Route::get('/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados');
 Route::get('/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
 Route::post('/redirecionar', [Classificados::class, 'redirecionar'])->name('redirecionar');

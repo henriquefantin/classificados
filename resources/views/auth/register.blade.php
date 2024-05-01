@@ -50,6 +50,15 @@
                 <x-input id="celular" class="phoneMask block mt-1 w-full" type="text" name="celular" autofocus />
             </div>
             <div class="mt-4">
+                <x-label for="instagram" :value="__('Instagram')" />
+                <div class="relative mt-2">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="text-gray-500 sm:text-sm">@</span>
+                    </div>
+                    <x-input id="instagram" class="block mt-1 w-full py-1.5 pl-7 pr-20 mt-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" name="instagram" autofocus />
+                </div>
+            </div>
+            <div class="mt-4">
                 <x-label for="cep" :value="__('CEP')" />
                 <x-input id="cep" class="block mt-1 w-full" type="text" name="cep" required autofocus />
             </div>

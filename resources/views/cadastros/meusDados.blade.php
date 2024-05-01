@@ -24,6 +24,7 @@
         $("#emailEmpresa").val("{{$empresa->email}}");
         $("#telefone").val("{{$empresa->telefone}}");
         $("#celular").val("{{$empresa->celular}}");
+        $("#instagram").val("{{$empresa->instagram}}");
         $("#cep").val("{{$empresa->cep}}").keyup();
         $("#numero").val("{{$empresa->numero}}").keyup();
         $("#complemento").val("{{$empresa->complemento}}").keyup();
@@ -46,8 +47,8 @@
                     <div class="max-auto max-w-2xl">
                         <!-- Validation Errors -->
                         <x-auth-validation-errors class="mb-4" :errors="$errors" />
-                        
-                        <form id="formCadastro" name="formCadastro" action="{{ route('atualizarMeusDados') }}" method="post" autocomplete="off">
+
+                        <form id="formCadastro" name="formCadastro" action="{{ route('atualizarMeusDados') }}" method="post" autocomplete="off" enctype="multipart/form-data">
                             @csrf
 
                             <!-- Dados Empresa -->
@@ -72,6 +73,15 @@
                             <div class="mt-4">
                                 <x-label for="celular" :value="__('WhatsApp')" />
                                 <x-input id="celular" class="phoneMask block mt-1 w-full" type="text" name="celular" autofocus />
+                            </div>
+                            <div class="mt-4">
+                                <x-label for="instagram" :value="__('Instagram')" />
+                                <div class="relative mt-2">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <span class="text-gray-500 sm:text-sm">@</span>
+                                    </div>
+                                    <x-input id="instagram" class="block mt-1 w-full py-1.5 pl-7 pr-20 mt-1 rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="text" name="instagram" autofocus />
+                                </div>
                             </div>
                             <div class="mt-4">
                                 <x-label for="cep" :value="__('CEP')" />
@@ -129,6 +139,31 @@
                             <div class="mt-4">
                                 <x-label for="complemento" :value="__('Complemento')" />
                                 <x-input id="complemento" class="block mt-1 w-full" type="text" name="complemento" autofocus />
+                            </div>
+                            <div class="mt-4">
+                                <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Imagens do produto</label>
+                                <div class="mt-4 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                                    <div class="text-center">
+
+                                        @empty($empresa)
+                                        @else
+                                        @empty($empresa->arquivo)
+                                        <svg class="mx-auto h-40 w-40 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        @else
+                                        <img class="mx-auto h-40 w-40 text-gray-300 rounded-md" src="{{ url('arquivos/imagens/' . $empresa->arquivo) }}" alt="...">
+                                        @endempty
+                                        @endempty
+                                        <div class="mt-4 flex justify-center text-sm leading-6 text-gray-600">
+                                            <label for="imagensUpload" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                                <span>Selecione as fotos</span>
+                                                <input id="imagensUpload" name="imagensUpload" type="file" class="sr-only arquivos">
+                                            </label>
+                                        </div>
+                                        <p class="text-xs leading-5 text-gray-600">PNG, JPG até 10MB</p>
+                                    </div>
+                                </div>
                             </div>
 
 

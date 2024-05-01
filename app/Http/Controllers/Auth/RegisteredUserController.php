@@ -66,6 +66,7 @@ class RegisteredUserController extends Controller
             'email' => $request->emailEmpresa,
             'telefone' => $request->telefone,
             'celular' => $request->celular,
+            'instagram' => $request->instagram,
             'cep' => $request->cep,
             'estado' => $request->estado,
             'cidade' => $request->cidade,
