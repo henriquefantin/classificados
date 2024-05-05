@@ -27,8 +27,8 @@
     </script>
 </head>
 
-<body>
-    <nav class="bg-blue-100">
+<body class="">
+    <nav class="bg-neutral-950 border-b-2 border-red-600">
         <div class="mx-auto max-w-full px-2 sm:px-6 lg:px-8">
             <div class="relative flex sm:h-16 items-center justify-between">
 
@@ -39,7 +39,7 @@
                             <div class="flex">
                                 <!-- Logo e Pesquisar -->
                                 <a class="mx-2 my-2 flex items-center" href="{{ route('classificados') }}">
-                                    <img class="me-2 max-w-8 min-w-8" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" alt="TE Logo" loading="lazy" />
+                                <img class="me-2 max-w-24 min-w-8" src="{{ url('arquivos/logo.png') }}" alt="TE Logo" loading="lazy" />
                                 </a>
                             </div>
                         </div>
@@ -51,15 +51,15 @@
                     <div class="hidden sm:ml-6 sm:block">
                         <div class="flex space-x-4">
                             <!-- Current: "bg-blue-300 text-white", Default: "bg-blue-200 hover:bg-blue-400 hover:text-white" -->
-                            <a href="/" class="bg-blue-300 text-black rounded-md px-3 py-2 text-sm font-medium hover:bg-blue-400" aria-current="page">Classificados</a>
+                            <a href="/" class="bg-red-600 text-black rounded-md px-3 py-2 text-base font-semibold" aria-current="page">Classificados</a>
                             @if (Route::has('login'))
                             @auth
-                            <a href="{{ url('/dashboard') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black rounded-md px-3 py-2 text-sm font-medium">Dashboard</a>
+                            <a href="{{ url('/dashboard') }}" class="bg-red-500 hover:bg-red-600 text-black rounded-md px-3 py-2 text-base font-semibold">Dashboard</a>
                             @else
-                            <a href="{{ route('login') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black rounded-md px-3 py-2 text-sm font-medium">Entrar</a>
+                            <a href="{{ route('login') }}" class="bg-red-500 hover:bg-red-600 text-black rounded-md px-3 py-2 text-base font-semibold">Entrar</a>
 
                             @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black rounded-md px-3 py-2 text-sm font-medium">Anunciar</a>
+                            <a href="{{ route('register') }}" class="bg-red-500 hover:bg-red-600 text-black rounded-md px-3 py-2 text-base font-semibold">Anunciar</a>
                             @endif
                             @endauth
                             @endif
@@ -72,9 +72,9 @@
         <!-- Mobile menu, show/hide based on menu state. -->
         <div id="mobile-menu" class="sm:hidden shadow-md">
 
-            <div id="divSanduicheNavbar" class="bg-blue-300 py-3">
+            <div id="divSanduicheNavbar" class="bg-neutral-950 py-3">
                 <div class="grid justify-items-end w-11/12">
-                    <span class="[&>svg]:w-8 [&>svg]:stroke-black">
+                    <span class="[&>svg]:w-8 [&>svg]:stroke-white">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.3">
                             <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
                         </svg>
@@ -84,19 +84,19 @@
 
             <div id="navbarConteudo" class="hidden">
                 <div class="grid justify-items-center mb-5">
-                    <img class="me-2 w-8 h-8" src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp" alt="TE Logo" loading="lazy" />
+                <img class="me-2 max-w-32 max-h-32" src="{{ url('arquivos/logo.png') }}" alt="TE Logo" loading="lazy" />
                 </div>
 
                 <div class="space-y-1 px-2 pb-3 pt-2">
-                    <a href="/" class="bg-blue-300 text-black block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Classificados</a>
+                    <a href="/" class="bg-red-600 text-black block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Classificados</a>
                     @if (Route::has('login'))
                     @auth
-                    <a href="{{ url('/dashboard') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Dashboard</a>
+                    <a href="{{ url('/dashboard') }}" class="bg-red-500 hover:bg-red-600 text-black block rounded-md px-3 py-2 text-base font-medium">Dashboard</a>
                     @else
-                    <a href="{{ route('login') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Entrar</a>
+                    <a href="{{ route('login') }}" class="bg-red-500 hover:bg-red-600 text-black block rounded-md px-3 py-2 text-base font-medium">Entrar</a>
 
                     @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="bg-blue-200 hover:bg-blue-400 hover:text-black block rounded-md px-3 py-2 text-base font-medium">Anunciar</a>
+                    <a href="{{ route('register') }}" class="bg-red-500 hover:bg-red-600 text-black block rounded-md px-3 py-2 text-base font-medium">Anunciar</a>
                     @endif
                     @endauth
                     @endif

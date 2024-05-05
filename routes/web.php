@@ -26,7 +26,6 @@ Route::get('/busca/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listar
 Route::get('/estado/{estado}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.estado');
 Route::post('/redirecionar', [Classificados::class, 'redirecionar'])->name('redirecionar');
 Route::post('/detalheProduto', [Classificados::class, 'listarClassificados'])->name('detalheProduto');
-Route::post('/verificarLimiteAnuncio', [Classificados::class, 'verificarLimiteAnuncio'])->name('verificarLimiteAnuncio');
 
 Route::group(['middleware' => 'auth'], function() {
     Route::get('/dashboard', function() {
@@ -38,6 +37,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/listar/tipoAnuncio/{tipo?}', [Dashboard::class, 'listarTipoAnuncio'])->name('listarTipoAnuncio');
     Route::get('/listar/formaPagamento/{tipo?}', [Dashboard::class, 'listarFormaPagamento'])->name('listarFormaPagamento');
     Route::get('/listar/listarClientes', [Dashboard::class, 'listarClientes'])->name('listarClientes');
+    Route::post('/verificarLimiteAnuncio', [Dashboard::class, 'verificarLimiteAnuncio'])->name('verificarLimiteAnuncio');
 
     //Views - Cadastro
     Route::get('/cadastro/anuncio', [Dashboard::class, 'novoAnuncio'])->name('novoAnuncio');

@@ -32,6 +32,39 @@ class Dashboard extends Controller
         }
     }
 
+    function verificarLimiteAnuncio()
+    {
+        $retorno = true;
+        $msg = "";
+        $nivelAcesso = 0;
+        $contAnuncioAtivo = 0;
+
+        $sql  = " SELECT nivelCliente ";
+        $sql .= " FROM empresa ";
+        $sql .= " WHERE id = " . Auth::user()->codEmpresa;
+        $sql .= " LIMIT 1 ";
+        $rsEmpresa = DB::select($sql);
+        if ($rsEmpresa) {
+            $nivelAcesso = $rsEmpresa[0]->nivelCliente;
+        }
+
+        $sql  = " SELECT COUNT(*) AS qtdAnuncio ";
+        $sql .= " FROM produtos ";
+        $sql .= " WHERE codEmpresa = " . Auth::user()->codEmpresa;
+        $sql .= " AND dataFim IS NULL ";
+        $rsAnuncioAtivo = DB::select($sql);
+        if ($rsAnuncioAtivo) {
+            $contAnuncioAtivo = $rsAnuncioAtivo[0]->qtdAnuncio;
+        }
+
+        if ($nivelAcesso == 1 && $contAnuncioAtivo >= 15) {
+            $retorno = false;
+            $msg = "O limite de 15 anúncios ativos foi atingido! <br><br>";
+            $msg .= "Caso deseje manter mais anúncios ativos, contrate um novo plano.";
+        }
+        return response()->json(['podeCadastrar' => $retorno, 'msg' => $msg]);
+    }
+
     //Views - Lista
     function listarAnuncio($tipo = "A")
     {
@@ -744,27 +777,52 @@ class Dashboard extends Controller
         $erro = false;
 
         try {
-            $sql  = " UPDATE produtos SET ";
-            $sql .= " dataFim = curdate() ";
+            $sql  = " SELECT dataFim ";
+            $sql .= " FROM produtos ";
             $sql .= " WHERE id = " . $id;
-            $rsFormaPag = DB::statement($sql);
-            if ($rsFormaPag) {
-                $msg = "Anuncio encerrado com sucesso.";
-            } else {
-                $msg = "Erro ao encerrar anuncio.";
-                $erro = true;
+            $sql .= " LIMIT 1 ";
+            $rsEncerrar = DB::select($sql);
+
+            if (!is_null($rsEncerrar[0]->dataFim) && $rsEncerrar[0]->dataFim != "") {
+                $limiteAnuncio = json_decode($this->verificarLimiteAnuncio()->getContent());
+                if (!$limiteAnuncio->podeCadastrar) {
+                    $msg = $limiteAnuncio->msg;
+                    $erro = true;
+                }
             }
 
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $id . "#" . $msg;
+            if (!$erro) {
+                $sql  = " UPDATE produtos SET ";
+                if (is_null($rsEncerrar[0]->dataFim) || $rsEncerrar[0]->dataFim == "") {
+                    $sql .= " dataFim = curdate() ";
+                } else {
+                    $sql .= " dataFim = NULL ";
+                }
+                $sql .= " WHERE id = " . $id;
+                $rsFormaPag = DB::statement($sql);
+                
+                if ($rsFormaPag) {
+                    if (is_null($rsEncerrar[0]->dataFim) || $rsEncerrar[0]->dataFim == "") {
+                        $msg = "Anuncio encerrado com sucesso.";
+                    } else {
+                        $msg = "Anuncio reativado com sucesso.";
+                    }
+                } else {
+                    $msg = "Erro ao encerrar anuncio.";
+                    $erro = true;
+                }
             }
         } catch (\Exception $e) {
+            $msg = "Erro no cadastro.";
+            $erro = true;
+        }
+
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
     }
 
@@ -776,27 +834,41 @@ class Dashboard extends Controller
         $erro = false;
 
         try {
+            $sql  = " SELECT dataFim ";
+            $sql .= " FROM tipo_anuncio ";
+            $sql .= " WHERE id = " . $id;
+            $sql .= " LIMIT 1 ";
+            $rsEncerrar = DB::select($sql);
+
             $sql  = " UPDATE tipo_anuncio SET ";
-            $sql .= " dataFim = curdate() ";
+            if (is_null($rsEncerrar[0]->dataFim) || $rsEncerrar[0]->dataFim == "") {
+                $sql .= " dataFim = curdate() ";
+            } else {
+                $sql .= " dataFim = NULL ";
+            }
             $sql .= " WHERE id = " . $id;
             $rsTipoAnuncio = DB::statement($sql);
             if ($rsTipoAnuncio) {
-                $msg = "Tipo do anuncio encerrado com sucesso.";
+                if (is_null($rsEncerrar[0]->dataFim) || $rsEncerrar[0]->dataFim == "") {
+                    $msg = "Tipo do anuncio encerrado com sucesso.";
+                } else {
+                    $msg = "Tipo do anuncio reativado com sucesso.";
+                }
             } else {
                 $msg = "Erro ao encerrar o tipo do anuncio.";
                 $erro = true;
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $id . "#" . $msg;
-            }
         } catch (\Exception $e) {
+            $msg = "Erro no cadastro.";
+            $erro = true;
+        }
+
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
     }
 
@@ -808,27 +880,41 @@ class Dashboard extends Controller
         $erro = false;
 
         try {
+            $sql  = " SELECT dataFim ";
+            $sql .= " FROM forma_pagamento ";
+            $sql .= " WHERE id = " . $id;
+            $sql .= " LIMIT 1 ";
+            $rsEncerrar = DB::select($sql);
+
             $sql  = " UPDATE forma_pagamento SET ";
-            $sql .= " dataFim = curdate() ";
+            if (is_null($rsEncerrar[0]->dataFim) || $rsEncerrar[0]->dataFim == "") {
+                $sql .= " dataFim = curdate() ";
+            } else {
+                $sql .= " dataFim = NULL ";
+            }
             $sql .= " WHERE id = " . $id;
             $rsFormaPag = DB::statement($sql);
             if ($rsFormaPag) {
-                $msg = "Forma de pagamento encerrada com sucesso.";
+                if (is_null($rsEncerrar[0]->dataFim) || $rsEncerrar[0]->dataFim == "") {
+                    $msg = "Forma de pagamento encerrada com sucesso.";
+                } else {
+                    $msg = "Forma de pagamento reativada com sucesso.";
+                }
             } else {
                 $msg = "Erro ao encerrar forma de pagamento.";
                 $erro = true;
             }
-
-            if ($erro) {
-                DB::rollBack();
-                return $msg;
-            } else {
-                DB::commit();
-                return $id . "#" . $msg;
-            }
         } catch (\Exception $e) {
+            $msg = "Erro no cadastro.";
+            $erro = true;
+        }
+
+        if ($erro) {
             DB::rollBack();
-            return "Erro no cadastro.";
+            return response()->json(["success" => false, "msg" => $msg]);
+        } else {
+            DB::commit();
+            return response()->json(["success" => true, "msg" => $msg, "id" => $id]);
         }
     }
 }

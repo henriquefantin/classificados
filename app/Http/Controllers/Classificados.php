@@ -147,37 +147,4 @@ class Classificados extends Controller
             return view('produtos', ['lista' => $rsLista, 'busca' => $retornoBusca, 'estado' => $retornoEstado, 'cidade' => $retornoCidade, 'tipo' => $rsTipo]);
         }
     }
-
-    function verificarLimiteAnuncio()
-    {
-        $retorno = true;
-        $msg = "";
-        $nivelAcesso = 0;
-        $contAnuncioAtivo = 0;
-
-        $sql  = " SELECT nivelCliente ";
-        $sql .= " FROM empresa ";
-        $sql .= " WHERE id = " . Auth::user()->codEmpresa;
-        $sql .= " LIMIT 1 ";
-        $rsEmpresa = DB::select($sql);
-        if ($rsEmpresa) {
-            $nivelAcesso = $rsEmpresa[0]->nivelCliente;
-        }
-
-        $sql  = " SELECT COUNT(*) AS qtdAnuncio ";
-        $sql .= " FROM produtos ";
-        $sql .= " WHERE codEmpresa = " . Auth::user()->codEmpresa;
-        $sql .= " AND dataFim IS NULL ";
-        $rsAnuncioAtivo = DB::select($sql);
-        if ($rsAnuncioAtivo) {
-            $contAnuncioAtivo = $rsAnuncioAtivo[0]->qtdAnuncio;
-        }
-
-        if ($nivelAcesso == 1 && $contAnuncioAtivo >= 15) {
-            $retorno = false;
-            $msg = "O limite de 15 anúncios ativos foi atingido! <br><br>";
-            $msg .= "Caso deseje manter mais anúncios ativos, contrate um novo plano.";
-        }
-        return response()->json(['podeCadastrar' => $retorno, 'msg' => $msg]);
-    }
 }

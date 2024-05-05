@@ -27,7 +27,7 @@
             @csrf
 
             <!-- Dados Empresa -->
-            <span class="flex my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-purple-500 rounded-full me-1.5 flex-shrink-0"></span>Dados da Empresa</span>
+            <span class="flex my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-red-600 rounded-full me-1.5 flex-shrink-0"></span>Dados da Empresa</span>
             <div class="mt-4">
                 <x-label for="nomeEmpresa" :value="__('Nome Empresa')" />
                 <x-input id="nomeEmpresa" class="block mt-1 w-full" type="text" name="nomeEmpresa" required autofocus />
@@ -118,7 +118,7 @@
 
 
             <!-- Dados Login -->
-            <span class="flex mt-20 my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-purple-500 rounded-full me-1.5 flex-shrink-0"></span>Dados de Acesso</span>
+            <span class="flex mt-20 my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-red-600 rounded-full me-1.5 flex-shrink-0"></span>Dados de Acesso</span>
             <!-- Name -->
             <div class="mt-4">
                 <x-label for="name" :value="__('Name')" />

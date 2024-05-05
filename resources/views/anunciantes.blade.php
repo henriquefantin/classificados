@@ -3,32 +3,35 @@
 <?php
 ?>
 
-<span class="flex my-5 items-center text-xl font-medium text-gray-900"><span class="flex w-2.5 h-2.5 bg-purple-500 rounded-full me-1.5 flex-shrink-0"></span>Anunciantes</span>
-<div class="mt-6 row">
+<span class="flex my-5 items-center text-xl font-medium text-white"><span class="flex w-2.5 h-2.5 bg-red-600 rounded-full me-1.5 flex-shrink-0"></span>Anunciantes</span>
+<div class="mt-6 row text-white">
     <!-- <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"> -->
 
     @foreach ($empresa as $reg)
-    <div codigo="{{ $reg->id }}" class="cardAnunciante group relative border-solid border rounded border-gray-200 shadow-md hover:shadow-xl">
+    <div codigo="{{ $reg->id }}" class="cardAnunciante group relative border-solid border rounded border-gray-600 shadow-md hover:shadow-xl hover:shadow-slate-600">
         <div class="p-6 flex items-center">
             <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                 <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t lg:aspect-none group-hover:opacity-85 lg:h-50">
                     @empty($reg->arquivo)
-                    <svg class="mx-auto h-40 w-40 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <svg class="mx-auto h-40 w-40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                         <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd"></path>
                     </svg>
                     @else
                     <img class="h-full w-full object-cover object-center lg:h-full lg:w-full rounded-md" src="{{ url('arquivos/imagens/' . $reg->arquivo) }}" alt="...">
                     @endempty
                 </div>
-                <p class="text-lg text-gray-700 font-bold flex items-center">
+                <p class="text-2xl font-bold flex items-center">
                     {{ $reg->nome }}
                 </p>
-                <div class="text-sm text-gray-700 flex flex-col self-center">
+                <div class="text-base flex flex-col self-center">
                     <p class="">
                         {{ $reg->cidade }}/{{ $reg->estado }}
                     </p>
                     <p class="">
-                        {{ $reg->rua }} - {{ $reg->numero }}
+                        {{ $reg->rua }}
+                    </p>
+                    <p class="">
+                        {{ $reg->numero }}
                     </p>
                     @empty($reg->complemento)
                     @else
@@ -37,7 +40,7 @@
                     </p>
                     @endempty
                 </div>
-                <div class="text-sm text-gray-700 flex flex-col self-center">
+                <div class="text-lg flex flex-col self-center">
                     @empty($reg->email)
                     @else
                     <p class="flex items-start items-center">
@@ -52,7 +55,7 @@
                     @else
                     <p class="flex items-start items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="mr-1" version="1.0" width="25px" height="25px" viewBox="0 0 1030.000000 1280.000000" preserveAspectRatio="xMidYMid meet">
-                            <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                            <g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="#fff" stroke="none">
                                 <path d="M8646 12790 c-60 -16 -149 -67 -194 -113 -71 -72 -2120 -2778 -2157 -2848 -100 -191 -80 -414 53 -578 19 -24 247 -213 506 -421 488 -391 506 -408 555 -521 50 -114 66 -279 42 -430 -28 -171 -113 -399 -240 -644 -170 -327 -201 -370 -1122 -1576 l-874 -1147 -225 -237 c-442 -467 -720 -700 -955 -801 -87 -38 -93 -39 -205 -39 -123 0 -172 14 -246 70 -17 13 -201 233 -407 488 -206 255 -390 476 -408 492 -163 138 -410 119 -560 -41 -53 -57 -2097 -2749 -2136 -2813 -112 -186 -89 -448 55 -608 31 -35 842 -641 1021 -763 282 -192 781 -290 1278 -250 1399 114 2984 1146 4542 2960 1197 1393 2177 2928 2733 4280 351 853 541 1627 589 2400 49 785 -113 1575 -418 2037 -50 76 -821 973 -876 1019 -61 52 -150 86 -235 90 -42 2 -94 -1 -116 -6z" />
                             </g>
                         </svg>
@@ -100,7 +103,7 @@
                                 <circle cx="24" cy="24" r="6" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" />
                             </g>
                         </svg>
-                        {{ $reg->instagram }}
+                        @ {{ $reg->instagram }}
                     </p>
                     @endempty
                 </div>

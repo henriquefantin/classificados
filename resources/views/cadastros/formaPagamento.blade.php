@@ -22,7 +22,7 @@
                         window.location.href = "{{ route('listarFormaPagamento', ['tipo' => 'A']) }}?mensagem=" + encodeURIComponent(data.msg);
                     } else {
                         $('#btnModalAvisoMsg').click();
-                        $('#mensagemRetorno').text(data.msg);
+                        $('#mensagemRetorno').html(data.msg);
                     }
                 }
             });
