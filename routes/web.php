@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Classificados;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,11 @@ use App\Http\Controllers\Classificados;
 Route::get('/', function () {
     return redirect('/anunciantes');
 });
+
+Route::get('envio-email', function() {
+    return new \App\Mail\emailNovoCliente();
+    // Mail::send(new \App\Mail\emailNovoCliente());
+}); 
 
 Route::get('/anunciantes', [Classificados::class, 'listarAnunciantes'])->name('listarAnunciantes');
 Route::get('/empresa/{empresa?}/{busca?}/{estado?}/{cidade?}', [Classificados::class, 'listarClassificados'])->name('classificados.empresa');
@@ -43,6 +49,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/cadastro/anuncio', [Dashboard::class, 'novoAnuncio'])->name('novoAnuncio');
     Route::get('/cadastro/tipoAnuncio', [Dashboard::class, 'novoTipoAnuncio'])->name('novoTipoAnuncio');
     Route::get('/cadastro/formaPagamento', [Dashboard::class, 'novoFormaPagamento'])->name('novoFormaPagamento');
+    Route::get('/cadastro/cliente', [Dashboard::class, 'novoCliente'])->name('novoCliente');
 
     //Views - Editar
     Route::get('/editar/anuncio/{id}', [Dashboard::class, 'editarAnuncio'])->name('editarAnuncio');
@@ -54,6 +61,7 @@ Route::group(['middleware' => 'auth'], function() {
     Route::post('/salvar/anuncio', [Dashboard::class, 'salvarAnuncio'])->name('salvarAnuncio');
     Route::post('/salvar/tipoAnuncio', [Dashboard::class, 'salvarTipoAnuncio'])->name('salvarTipoAnuncio');
     Route::post('/salvar/formaPagamento', [Dashboard::class, 'salvarFormaPagamento'])->name('salvarFormaPagamento');
+    Route::post('/salvar/cliente', [Dashboard::class, 'salvarCliente'])->name('salvarCliente');
 
     //Update
     Route::post('/atualizar/anuncio/{id}', [Dashboard::class, 'atualizarAnuncio'])->name('atualizarAnuncio');

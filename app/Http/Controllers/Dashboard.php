@@ -172,6 +172,12 @@ class Dashboard extends Controller
         return view('cadastros.formaPagamento', ['actionForm' => $actionForm]);
     }
 
+    function novoCliente()
+    {
+        $actionForm = route('salvarCliente');
+        return view('cadastros.novoCliente', ['actionForm' => $actionForm]);
+    }
+
     //Edit Views
     function editarAnuncio($id)
     {
@@ -477,6 +483,45 @@ class Dashboard extends Controller
             DB::commit();
             return response()->json(["success" => true, "msg" => $msg, "id" => $idFormaPagamento]);
         }
+    }
+
+    function salvarCliente(Request $req)
+    {
+        $req->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $empresa = Empresa::create([
+            'nome' => $req->nomeEmpresa,
+            'cnpj' => $req->cnpj,
+            'email' => $req->emailEmpresa,
+            'telefone' => $req->telefone,
+            'celular' => $req->celular,
+            'instagram' => $req->instagram,
+            'cep' => $req->cep,
+            'estado' => $req->estado,
+            'cidade' => $req->cidade,
+            'bairro' => $req->bairro,
+            'rua' => $req->rua,
+            'numero' => $req->numero,
+            'complemento' => $req->complemento,
+        ]);
+        if ($empresa) {
+            $codigoEmpresa = $empresa->id;
+            $user = User::create([
+                'name' => $req->name,
+                'email' => $req->email,
+                'password' => Hash::make($req->password),
+                'tipo' => 1,
+                'ativo' => 'N',
+                'codEmpresa' => $codigoEmpresa,
+            ]);
+            $idUser = $user->id;
+        }
+
+        return redirect('/listar/listarClientes')->with('mensagem', 'Cliente cadastrado com sucesso');
     }
 
     //Update

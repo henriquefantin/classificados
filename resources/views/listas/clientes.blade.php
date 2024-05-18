@@ -59,7 +59,7 @@ function descricaoStatus($status)
                     @endif
                     <div class="grid grid-cols-2 gap-4">
                         <div class="mt-6 flex items-center justify-start">
-                            <a href="#" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Cadastrar</a>
+                            <a href="{{ route('novoCliente') }}" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Cadastrar</a>
                         </div>
                     </div>
                     <div class="overflow-x-auto overflow-y-hidden">
