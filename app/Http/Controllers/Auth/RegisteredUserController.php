@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Mail;
 
 class RegisteredUserController extends Controller
 {
@@ -91,6 +92,8 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+        
+        Mail::send(new \App\Mail\emailNovoCliente());
 
         return redirect(RouteServiceProvider::HOME);
     }
@@ -102,7 +105,6 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
-        dd($req->nomeEmpresa);
 
         $empresa = Empresa::find(Auth::user()->codEmpresa);
         $empresa->nome = $req->nomeEmpresa;
