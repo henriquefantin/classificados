@@ -22,8 +22,8 @@ Route::get('/', function () {
 });
 
 Route::get('envio-email', function() {
-    return new \App\Mail\emailNovoCliente();
-    // Mail::send(new \App\Mail\emailNovoCliente());
+    // return new \App\Mail\emailNovoCliente();
+    Mail::send(new \App\Mail\emailNovoCliente());
 }); 
 
 Route::get('/anunciantes', [Classificados::class, 'listarAnunciantes'])->name('listarAnunciantes');
