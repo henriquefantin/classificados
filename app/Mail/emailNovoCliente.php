@@ -43,7 +43,8 @@ class emailNovoCliente extends Mailable
     public function build()
     {
         $this->subject('Nova solicitação de acesso.');
-        $this->to('henrique.fantin.ns@gmail.com','João');
+        $this->to('jhoao.victor@hotmail.com','João');
+        $this->cc('dusapla@hotmail.com','Eduardo');
         return $this->view('mail.emailNovoCliente', ['empresa' => $this->empresa]);
     }
 }

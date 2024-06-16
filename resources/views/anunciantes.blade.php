@@ -8,7 +8,7 @@
     <!-- <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8"> -->
 
     @foreach ($empresa as $reg)
-    <div codigo="{{ $reg->id }}" class="cardAnunciante group relative border-solid border rounded border-gray-600 shadow-md hover:shadow-xl hover:shadow-slate-600">
+    <div codigo="{{ $reg->id }}" class="cardAnunciante mb-5 group relative border-solid border rounded border-gray-600 shadow-md hover:shadow-xl hover:shadow-slate-600">
         <div class="p-6 flex items-center">
             <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                 <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t lg:aspect-none group-hover:opacity-85 lg:h-50">

@@ -40,6 +40,59 @@
     $('#valor').keyup(function() {
         return mascara(this, "moeda");
     });
+
+    $('#imagensUpload').change(function(){
+        var files = $(this)[0].files;
+        var maxSize = 10 * 1024 * 1024; // 10 MB em bytes
+        var allowedExtensions = ["png", "jpg", "jpeg"];
+        var valid = true;
+
+        for(var i = 0; i < files.length; i++) {
+            var file = files[i];
+            var fileSize = file.size;
+            var fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if(fileSize > maxSize) {
+                $('#btnModalAvisoMsg').click();
+                $('#mensagemRetorno').html('O arquivo selecionado é maior que 10 MB.');
+                valid = false;
+                break;
+            }
+
+            if($.inArray(fileExtension, allowedExtensions) === -1) {
+                $('#btnModalAvisoMsg').click();
+                $('#mensagemRetorno').html('O arquivo selecionado não possui uma extensão válida (PNG, JPG, JPEG).');
+                valid = false;
+                break;
+            }
+        }
+
+        if(!valid) {
+            // Limpar o campo de upload, se houver arquivos inválidos
+            $(this).val('');
+        }
+    });
+
+    $('#videoUpload').change(function(){
+        var file = $(this)[0].files[0];
+        var allowedExtensions = ["mp4", "avi"];
+        var valid = true;
+
+        if (file) {
+            var fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if ($.inArray(fileExtension, allowedExtensions) === -1) {
+                $('#btnModalAvisoMsg').click();
+                $('#mensagemRetorno').html('O arquivo selecionado não possui uma extensão válida (MP4, AVI).');
+                valid = false;
+            }
+
+            if (!valid) {
+                // Limpar o campo de upload, se o vídeo for inválido
+                $(this).val('');
+            }
+        }
+    });
 </script>
 @endsection
 
@@ -110,7 +163,7 @@
                                                 <input id="imagensUpload" name="imagensUpload[]" type="file" class="obrigatorio sr-only arquivos" multiple>
                                             </label>
                                         </div>
-                                        <p class="text-xs leading-5 text-gray-600">PNG, JPG até 10MB</p>
+                                        <p class="text-xs leading-5 text-gray-600">PNG, JPG, JPEG até 10MB</p>
                                         <p class="mt-2 text-sm text-red-600 oculto">Campo obrigatório!</p>
                                     </div>
                                 </div>
